@@ -235,6 +235,8 @@ export default function UserDetail(props: Props) {
   const [isLoading, setIsLoading] = useState<Boolean>();
   const [editButtonImageUpload, setEditButtonImageUpload] =
     useState<Boolean>(false);
+
+  console.log('Test to open a new pr');
   const router = useRouter();
 
   useEffect(() => {

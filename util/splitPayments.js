@@ -24,6 +24,7 @@ export function splitPayments(object) {
   let j = sortedPeople.length - 1;
   let debt;
   const resultArray = [];
+
   while (i < j) {
     debt = Math.min(-sortedValuesPaid[i], sortedValuesPaid[j]);
 
