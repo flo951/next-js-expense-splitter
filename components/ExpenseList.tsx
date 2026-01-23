@@ -1,5 +1,6 @@
+import { css } from '@emotion/react';
 import { expenses, people } from '@prisma/client';
-import { DeleteExpenseResponseBody } from '../pages/api/expense';
+import { CreateExpenseResponseBody } from '../pages/api/expense';
 import { Errors, formStyles, spanStyles } from '../pages/createevent';
 import {
   expenseContainerStyles,
@@ -10,7 +11,41 @@ import {
   selectStyles,
   spanErrorStyles,
 } from '../pages/users/[eventId]';
-import { Expense, Person } from '../util/database';
+
+type ExpenseWithParticipants = expenses & { participantIds: number[] };
+
+const participantCheckboxContainerStyles = css`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+`;
+
+const checkboxLabelStyles = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  cursor: pointer;
+
+  input {
+    cursor: pointer;
+  }
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+const participantListStyles = css`
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+`;
 
 type Props = {
   personExpense: string;
@@ -18,10 +53,12 @@ type Props = {
   expenseError: string;
   setExpenseError: (error: string) => void;
   selectedPersonId: number;
+  selectedParticipants: number[];
+  setSelectedParticipants: (ids: number[]) => void;
   expenseName: string;
   setExpenseName: (name: string) => void;
-  expenseList: expenses[];
-  setExpenseList: (expense: expenses[]) => void;
+  expenseList: ExpenseWithParticipants[];
+  setExpenseList: (expense: ExpenseWithParticipants[]) => void;
   setErrors: (error: Errors | undefined) => void;
   peopleList: people[];
   eventId: number;
@@ -54,6 +91,11 @@ export default function ExpenseList(props: Props) {
             return;
           }
 
+          if (props.selectedParticipants.length === 0) {
+            props.setExpenseError('Please select at least one participant');
+            return;
+          }
+
           const createPersonResponse = await fetch('/api/expense', {
             method: 'POST',
             headers: {
@@ -64,24 +106,28 @@ export default function ExpenseList(props: Props) {
               cost: parseFloat(props.personExpense) * 100,
               eventId: props.eventId,
               paymaster: props.selectedPersonId,
+              participantIds: props.selectedParticipants,
             }),
           });
 
           const createExpenseResponseBody =
-            (await createPersonResponse.json()) as DeleteExpenseResponseBody;
+            (await createPersonResponse.json()) as CreateExpenseResponseBody;
 
-          const createdExpenses: expenses[] = [
-            ...props.expenseList,
-            createExpenseResponseBody.expense,
-          ];
           if ('errors' in createExpenseResponseBody) {
             props.setErrors(createExpenseResponseBody.errors);
             return;
           }
 
+          const createdExpenses: ExpenseWithParticipants[] = [
+            ...props.expenseList,
+            createExpenseResponseBody.expense,
+          ];
+
           props.setExpenseList(createdExpenses);
           props.setExpenseName('');
           props.setPersonExpense('0');
+          // Reset participants to all people for next expense
+          props.setSelectedParticipants(props.peopleList.map((p) => p.id));
 
           props.setErrors([]);
           props.setExpenseError('');
@@ -113,6 +159,47 @@ export default function ExpenseList(props: Props) {
               );
             })}
           </select>
+
+          <label>Who splits this expense?</label>
+          <div css={participantCheckboxContainerStyles}>
+            {props.peopleList.map((person) => {
+              return (
+                person.event_id === props.eventId && (
+                  <label
+                    key={`participant-${person.id}`}
+                    css={checkboxLabelStyles}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={props.selectedParticipants.includes(person.id)}
+                      disabled={person.id === props.selectedPersonId}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          props.setSelectedParticipants([
+                            ...props.selectedParticipants,
+                            person.id,
+                          ]);
+                        } else {
+                          // Don't allow unchecking the paymaster
+                          if (person.id === props.selectedPersonId) {
+                            return;
+                          }
+                          props.setSelectedParticipants(
+                            props.selectedParticipants.filter(
+                              (id) => id !== person.id,
+                            ),
+                          );
+                        }
+                      }}
+                    />
+                    {person.name}
+                    {person.id === props.selectedPersonId && ' (paying)'}
+                  </label>
+                )
+              );
+            })}
+          </div>
+
           <label htmlFor="expense">Cost</label>
           <input
             data-test-id="expense-value"
@@ -152,20 +239,27 @@ export default function ExpenseList(props: Props) {
         </div>
       </form>
       {props.expenseList.map((expense) => {
+        const payerName = props.peopleList.find(
+          (p) => p.id === expense.paymaster,
+        )?.name;
+        const participantNames = props.peopleList
+          .filter((p) => expense.participantIds?.includes(p.id))
+          .map((p) => p.name)
+          .join(', ');
+
         return (
           <div key={`expense-${expense.id}}`}>
             <div css={expenseDetailStyles}>
               <span data-test-id="expense-value-name" css={spanStyles}>
-                {props.peopleList.map((person) => {
-                  return (
-                    person.id === expense.paymaster && (
-                      <span key={`expense from person with id ${person.id}`}>
-                        {expense.expensename} {expense.cost! / 100}€ paid by{' '}
-                        {person.name}
-                      </span>
-                    )
-                  );
-                })}
+                <span>
+                  {expense.expensename} {expense.cost! / 100}€ paid by{' '}
+                  {payerName}
+                </span>
+                {participantNames && (
+                  <div css={participantListStyles}>
+                    Split between: {participantNames}
+                  </div>
+                )}
               </span>
 
               <button

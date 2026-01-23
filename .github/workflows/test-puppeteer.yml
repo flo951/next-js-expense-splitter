@@ -42,7 +42,7 @@ jobs:
       - name: Install deps and build (with cache)
         uses: bahmutov/npm-install@v1
       # Run the migrations
-      - run: yarn migrate up
+      - run: prisma generate
       # Build the Next.js application
       - run: yarn build
       # Run the Jest unit tests

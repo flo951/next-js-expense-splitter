@@ -19,23 +19,25 @@ model events {
 }
 
 model expenses {
-  id          Int     @id @default(autoincrement())
-  expensename String  @db.VarChar(30)
-  cost        Int?
-  event_id    Int?
-  paymaster   Int?
-  events      events? @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  people      people? @relation(fields: [paymaster], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                   Int                    @id @default(autoincrement())
+  expensename          String                 @db.VarChar(30)
+  cost                 Int?
+  event_id             Int?
+  paymaster            Int?
+  events               events?                @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  people               people?                @relation(fields: [paymaster], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  expense_participants expense_participants[]
 }
 
 model people {
-  id       Int        @id @default(autoincrement())
-  name     String     @db.VarChar(30)
-  event_id Int?
-  user_id  Int?
-  expenses expenses[]
-  events   events?    @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users    users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(30)
+  event_id             Int?
+  user_id              Int?
+  expenses             expenses[]
+  events               events?                @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                users?                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  expense_participants expense_participants[]
 }
 
 model sessions {
@@ -53,4 +55,14 @@ model users {
   events        events[]
   people        people[]
   sessions      sessions[]
+}
+
+model expense_participants {
+  id         Int      @id @default(autoincrement())
+  expense_id Int
+  person_id  Int
+  expenses   expenses @relation(fields: [expense_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  people     people   @relation(fields: [person_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([expense_id, person_id])
 }

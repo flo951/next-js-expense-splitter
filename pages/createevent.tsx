@@ -218,15 +218,12 @@ export default function CreateEvent(props: Props) {
                 data-test-id={`event-${event.id}`}
                 key={`this is ${event.eventname} witdh ${event.id}`}
               >
-                <Link href={`/users/${event.id}`}>
-                  <a>
-                    <span
-                      css={spanStyles}
-                      data-test-id={`event-${event.eventname}`}
-                    >
-                      {event.eventname}
-                    </span>
-                  </a>
+                <Link
+                  data-test-id={`event-${event.eventname}`}
+                  css={spanStyles}
+                  href={`/users/${event.id}`}
+                >
+                  {event.eventname}
                 </Link>
                 <button
                   css={removeButtonStyles}
@@ -256,19 +253,6 @@ export default function CreateEvent(props: Props) {
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  // Redirect from HTTP to HTTPS on Heroku
-  if (
-    context.req.headers.host &&
-    context.req.headers['x-forwarded-proto'] &&
-    context.req.headers['x-forwarded-proto'] !== 'https'
-  ) {
-    return {
-      redirect: {
-        destination: `https://${context.req.headers.host}/register`,
-        permanent: true,
-      },
-    };
-  }
   const sessionToken = context.req.cookies.sessionToken;
   const session = await getValidSessionByToken(sessionToken);
   if (!session) {

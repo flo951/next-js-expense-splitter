@@ -6,9 +6,11 @@ import {
 } from '../../util/database';
 import { expenses } from '@prisma/client';
 
+type ExpenseWithParticipants = expenses & { participantIds: number[] };
+
 export type CreateExpenseResponseBody =
   | { errors: { message: string }[] }
-  | { expense: expenses };
+  | { expense: ExpenseWithParticipants };
 
 export type DeleteExpenseResponseBody = {
   expense: expenses;
@@ -21,6 +23,7 @@ type CreateEventRequestBody = {
   eventId: number;
   expenseId?: number;
   paymaster: number;
+  participantIds: number[];
 };
 
 type CreateEventNextApiRequest = Omit<NextApiRequest, 'body'> & {
@@ -29,7 +32,7 @@ type CreateEventNextApiRequest = Omit<NextApiRequest, 'body'> & {
 
 export default async function createEventHandler(
   request: CreateEventNextApiRequest,
-  response: NextApiResponse<CreateExpenseResponseBody>,
+  response: NextApiResponse<CreateExpenseResponseBody | DeleteExpenseResponseBody>,
 ) {
   // Create event in DB
   // Check if user is logged in and allowed to create or delete
@@ -49,14 +52,16 @@ export default async function createEventHandler(
       typeof request.body.cost !== 'number' ||
       !request.body.cost ||
       typeof request.body.paymaster !== 'number' ||
-      request.body.paymaster === 0
+      request.body.paymaster === 0 ||
+      !Array.isArray(request.body.participantIds) ||
+      request.body.participantIds.length === 0
     ) {
       // 400 bad request
       response.status(400).json({
         errors: [
           {
             message:
-              'Expense Name not provided or cost value invalid or paymaster id is 0',
+              'Expense Name not provided, cost value invalid, paymaster id is 0, or no participants selected',
           },
         ],
       });
@@ -68,6 +73,7 @@ export default async function createEventHandler(
       request.body.cost,
       request.body.eventId,
       request.body.paymaster,
+      request.body.participantIds,
     );
 
     response.status(201).json({ expense: expense });

@@ -95,16 +95,12 @@ export default function Header(props: Props) {
       {props.userObject ? (
         <div css={flexRowHeaderStyles}>
           <div css={flexContainerStyles}>
-            <Link href="/users/overview">
-              <a>Overview</a>
-            </Link>
-            <Link href="/createevent">
-              <a>Create New Event</a>
-            </Link>
+            <Link href="/users/overview">Overview</Link>
+            <Link href="/createevent">Create New Event</Link>
           </div>
           <div css={flexContainerStyles}>
             <h3>
-              Hi{' '}
+              Hi
               <span data-test-id="logged-in-user">
                 {props.userObject.username}
               </span>
@@ -116,14 +112,12 @@ export default function Header(props: Props) {
         </div>
       ) : (
         <div css={flexRowHeaderStyles}>
-          <Link href="/">
-            <a>Splitify</a>
+          <Link href="/">Splitify</Link>
+          <Link data-test-id="sign-up" href="/register">
+            Register
           </Link>
-          <Link href="/register">
-            <a data-test-id="sign-up">Register</a>
-          </Link>
-          <Link href="/login">
-            <a data-test-id="login">Login</a>
+          <Link data-test-id="login" href="/login">
+            Login
           </Link>
         </div>
       )}

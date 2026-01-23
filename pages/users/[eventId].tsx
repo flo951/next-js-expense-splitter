@@ -24,6 +24,8 @@ import { Errors, spanStyles } from '../createevent';
 import { errorStyles } from '../login';
 import { expenses, people } from '@prisma/client';
 
+type ExpenseWithParticipants = expenses & { participantIds: number[] };
+
 const mainStyles = css`
   margin: 12px;
   display: flex;
@@ -205,7 +207,7 @@ type Props = {
   eventInDb: Event;
   errors: string;
   peopleInDb: people[];
-  expensesInDb: expenses[];
+  expensesInDb: ExpenseWithParticipants[];
   profileImageInDb: ImageUrl;
   cloudName: string;
   uploadPreset: string;
@@ -217,12 +219,14 @@ export default function UserDetail(props: Props) {
   const [personExpense, setPersonExpense] = useState('');
   const [expenseName, setExpenseName] = useState('');
   const [selectedPersonId, setSelectedPersonId] = useState<number>(0);
+  const [selectedParticipants, setSelectedParticipants] = useState<number[]>(
+    props.peopleInDb.map((p) => p.id),
+  );
   const [sumEventCosts, setSumEventCosts] = useState('0');
-  const [sharedCosts, setSharedCosts] = useState('0');
   const [errors, setErrors] = useState<Errors | undefined>([]);
   const [expenseError, setExpenseError] = useState('');
   const [uploadError, setUploadError] = useState('');
-  const [expenseList, setExpenseList] = useState<expenses[]>(
+  const [expenseList, setExpenseList] = useState<ExpenseWithParticipants[]>(
     props.expensesInDb,
   );
   const [uploadImage, setUploadImage] = useState<FileList>();
@@ -235,11 +239,7 @@ export default function UserDetail(props: Props) {
   useEffect(() => {
     function calculateTotalSumPerEvent() {
       if (typeof props.eventInDb === 'undefined') {
-        return {
-          props: {
-            errors: 'This event doesnt exist',
-          },
-        };
+        return;
       }
 
       const cost: number[] = expenseList.map((expense) => {
@@ -248,18 +248,14 @@ export default function UserDetail(props: Props) {
 
       const sum = cost.reduce((partialSum, a) => partialSum + a, 0);
       setSumEventCosts(sum.toFixed(2));
-
-      const amountPeople = peopleList.filter((person) => {
-        return person.name;
-      });
-
-      const costPaidByEveryone =
-        Math.round((sum / amountPeople.length) * 100) / 100;
-
-      setSharedCosts(costPaidByEveryone.toFixed(2));
     }
     calculateTotalSumPerEvent();
-  }, [expenseList, peopleList, props.eventInDb]);
+  }, [expenseList, props.eventInDb]);
+
+  // Reset selectedParticipants when peopleList changes (new person added)
+  useEffect(() => {
+    setSelectedParticipants(peopleList.map((p) => p.id));
+  }, [peopleList]);
   if (props.errors) {
     return (
       <>
@@ -302,8 +298,12 @@ export default function UserDetail(props: Props) {
   }
   // select a created person in a dropdown as a template for adding expenses
   function handleSelectPerson(event: React.ChangeEvent<HTMLSelectElement>) {
-    const person = event.target.value;
-    setSelectedPersonId(parseInt(person));
+    const personId = parseInt(event.target.value);
+    setSelectedPersonId(personId);
+    // Ensure paymaster is in selected participants
+    if (!selectedParticipants.includes(personId) && personId !== 0) {
+      setSelectedParticipants([...selectedParticipants, personId]);
+    }
   }
 
   // function to delete created events
@@ -520,6 +520,8 @@ export default function UserDetail(props: Props) {
                   expenseError={expenseError}
                   setExpenseError={setExpenseError}
                   selectedPersonId={selectedPersonId}
+                  selectedParticipants={selectedParticipants}
+                  setSelectedParticipants={setSelectedParticipants}
                   expenseName={expenseName}
                   setExpenseName={setExpenseName}
                   expenseList={expenseList}
@@ -533,20 +535,9 @@ export default function UserDetail(props: Props) {
 
                 <span css={spanStyles}>Participants: {peopleList.length}</span>
                 <span css={spanStyles}> Total: {sumEventCosts} €</span>
-
-                {peopleList.length !== 0 && (
-                  <span css={spanStyles}>
-                    Everyone has to pay
-                    <span css={redColorCostsStyles}> {sharedCosts} €</span>
-                  </span>
-                )}
               </div>
 
-              <BarChart
-                people={peopleList}
-                expenses={expenseList}
-                sharedCosts={sharedCosts}
-              />
+              <BarChart people={peopleList} expenses={expenseList} />
             </div>
           );
         })}

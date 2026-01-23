@@ -3,7 +3,7 @@ import { ArcElement } from 'chart.js';
 import Chart from 'chart.js/auto';
 import { css } from '@emotion/react';
 import { spanStyles } from '../pages/createevent';
-import { splitPayments } from '../util/splitPayments';
+import { splitPayments, Balances } from '../util/splitPayments';
 
 import { expenses, people } from '@prisma/client';
 
@@ -25,14 +25,11 @@ const resultStyles = css`
   gap: 6px;
 `;
 
+type ExpenseWithParticipants = expenses & { participantIds: number[] };
+
 type Props = {
   people: people[];
-  expenses: expenses[];
-  sharedCosts: string;
-};
-
-export type DynamicKeyValueObject = {
-  [key: string]: number;
+  expenses: ExpenseWithParticipants[];
 };
 
 export default function BarChart(props: Props) {
@@ -59,16 +56,26 @@ export default function BarChart(props: Props) {
   }
 
   const expensePerPerson = props.people.map((person) => {
-    const cost = props.expenses.map((expense) => {
-      return person.id === expense.paymaster ? expense.cost! / 100 : 0;
-    });
+    // Calculate what this person paid
+    const totalPaid = props.expenses
+      .filter((expense) => expense.paymaster === person.id)
+      .reduce((sum, expense) => sum + (expense.cost || 0) / 100, 0);
 
-    const sum = cost.reduce((partialSum, a) => partialSum + a, 0);
-    const personSum =
-      Math.round((sum - parseFloat(props.sharedCosts)) * 100) / 100;
+    // Calculate what this person owes (their share of expenses they're part of)
+    const totalOwed = props.expenses
+      .filter((expense) => expense.participantIds.includes(person.id))
+      .reduce((sum, expense) => {
+        const shareAmount =
+          (expense.cost || 0) / 100 / expense.participantIds.length;
+        return sum + shareAmount;
+      }, 0);
+
+    // Balance = what they paid - what they owe
+    const balance = Math.round((totalPaid - totalOwed) * 100) / 100;
+
     return {
       personSum: {
-        sum: personSum,
+        sum: balance,
         personId: person.id,
         personName: person.name,
       },
@@ -82,8 +89,8 @@ export default function BarChart(props: Props) {
     balances.push(expensePerPerson[i].personSum);
   }
 
-  // Sort balance and name from each person and assign it into a single object
-  const payments: DynamicKeyValueObject = balances.reduce(
+  // Convert balances to object format for settlement calculation
+  const payments: Balances = balances.reduce(
     (obj, item) => Object.assign(obj, { [item.personName]: item.sum }),
     {},
   );
@@ -165,22 +172,14 @@ export default function BarChart(props: Props) {
           );
         })}
 
-        {props.people.map((person) => {
-          const cost = props.expenses.map((expense) => {
-            return person.id === expense.paymaster ? expense.cost! / 100 : 0;
-          });
-
-          const sum = cost.reduce((partialSum, a) => partialSum + a, 0);
-          const personSum =
-            Math.round((sum - parseFloat(props.sharedCosts)) * 100) / 100;
-
+        {expensePerPerson.map((item) => {
           return (
-            personSum > 0 && (
+            item.personSum.sum > 0 && (
               <span
-                key={`person-${person.id} receives money `}
+                key={`person-${item.personSum.personId} receives money `}
                 css={spanStyles}
               >
-                {` ${person.name} receives ${personSum.toFixed(2)}€`}
+                {` ${item.personSum.personName} receives ${item.personSum.sum.toFixed(2)}€`}
               </span>
             )
           );

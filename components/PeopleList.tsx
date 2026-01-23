@@ -10,14 +10,16 @@ import {
   spanStyles,
 } from '../pages/createevent';
 import { removeButtonStyles } from '../pages/users/[eventId]';
-import { Expense, Person, User } from '../util/database';
+import { User } from '../util/database';
 import { expenses, people } from '@prisma/client';
+
+type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
 type Props = {
   user: User;
   setErrors: (errors: Errors) => void;
-  expenseList: expenses[];
-  setExpenseList: (expense: expenses[]) => void;
+  expenseList: ExpenseWithParticipants[];
+  setExpenseList: (expense: ExpenseWithParticipants[]) => void;
   eventId: number;
   setPeopleList: (people: people[]) => void;
   peopleList: people[];
@@ -50,9 +52,18 @@ export default function PeopleList(props: Props) {
       });
       props.setPeopleList(newPeopleList);
 
-      const newExpenseList = props.expenseList.filter((expense) => {
-        return deletePersonResponseBody.person.id !== expense.paymaster;
-      });
+      // Filter out expenses where the deleted person is the paymaster
+      // and remove the deleted person from participantIds of remaining expenses
+      const newExpenseList = props.expenseList
+        .filter((expense) => {
+          return deletePersonResponseBody.person.id !== expense.paymaster;
+        })
+        .map((expense) => ({
+          ...expense,
+          participantIds: expense.participantIds.filter(
+            (id) => id !== deletePersonResponseBody.person.id,
+          ),
+        }));
       props.setExpenseList(newExpenseList);
 
       return;

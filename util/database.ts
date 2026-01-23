@@ -104,7 +104,7 @@ type Session = {
   token: string;
   userId: number;
 };
-export async function getValidSessionByToken(token: string) {
+export async function getValidSessionByToken(token: string | undefined) {
   if (!token) return undefined;
   //   const session = await client.sql<Session>`
   //     SELECT * FROM sessions WHERE token = ${token} AND expiry_timestamp > now()
@@ -389,31 +389,45 @@ export type Expense = {
   paymaster: number;
 };
 
+export type ExpenseWithParticipants = Expense & {
+  participantIds: number[];
+};
+
 export async function createExpense(
   expenseName: string,
   cost: number,
-
   eventId: number,
   paymaster: number,
+  participantIds: number[],
 ) {
-  // const expense = await client.sql<Expense>`
+  // Ensure paymaster is always included in participants
+  const uniqueParticipants = [...new Set([paymaster, ...participantIds])];
 
-  // INSERT INTO expenses
-  // (expensename, cost, event_id, paymaster)
-  // VALUES
-  // (${expenseName},${cost}, ${eventId}, ${paymaster})
-  // RETURNING *
-  // `;
-
-  // return camelcaseKeys(expense.rows[0]);
-  return await prisma.expenses.create({
+  const expense = await prisma.expenses.create({
     data: {
       expensename: expenseName,
       cost,
       event_id: eventId,
       paymaster,
+      expense_participants: {
+        create: uniqueParticipants.map((personId) => ({
+          person_id: personId,
+        })),
+      },
+    },
+    include: {
+      expense_participants: {
+        select: {
+          person_id: true,
+        },
+      },
     },
   });
+
+  return {
+    ...expense,
+    participantIds: expense.expense_participants.map((ep) => ep.person_id),
+  };
 }
 
 export async function deleteExpenseById(expenseId: number) {
@@ -437,7 +451,17 @@ export async function getAllExpensesWhereIdMatches(eventId: number) {
     where: {
       event_id: eventId,
     },
+    include: {
+      expense_participants: {
+        select: {
+          person_id: true,
+        },
+      },
+    },
   });
 
-  return expenses.map((expense) => camelcaseKeys(expense));
+  return expenses.map((expense) => ({
+    ...camelcaseKeys(expense),
+    participantIds: expense.expense_participants.map((ep) => ep.person_id),
+  }));
 }

@@ -19,13 +19,8 @@ export default function Logout() {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const token = context.req.cookies.sessionToken;
 
-  const session = await deleteSessionByToken(token);
-  if (!session) {
-    console.log('something went wrong with the session');
-    return;
-  }
-
   if (token) {
+    await deleteSessionByToken(token);
     context.res.setHeader(
       'Set-Cookie',
       serialize('sessionToken', '', {
@@ -34,8 +29,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }),
     );
   }
+
   return {
-    props: {},
     redirect: {
       destination: '/',
       permanent: false,
