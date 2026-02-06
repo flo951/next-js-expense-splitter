@@ -31,12 +31,12 @@ const errorStyles = css`
 
 type Errors = { message: string }[];
 
-type Props = {
+type RegisterProps = {
   refreshUserProfile: () => void;
   csrfToken: string;
 };
 
-export default function Register(props: Props) {
+export default function Register({ refreshUserProfile, csrfToken }: RegisterProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Errors>([]);
@@ -64,7 +64,7 @@ export default function Register(props: Props) {
               body: JSON.stringify({
                 username: username,
                 password: password,
-                csrfToken: props.csrfToken,
+                csrfToken: csrfToken,
               }),
             });
 
@@ -75,7 +75,7 @@ export default function Register(props: Props) {
               setErrors(registerResponseBody.errors);
               return;
             }
-            props.refreshUserProfile();
+            refreshUserProfile();
 
             await router
               .push('./createevent')

@@ -10,7 +10,7 @@ const mainStyles = css`
   margin: 1rem 1rem;
 `;
 
-type Props =
+type RestrictedPageProps =
   | {
       user: User;
     }
@@ -18,7 +18,7 @@ type Props =
       error: string;
     };
 
-export default function RestrictedPage(props: Props) {
+export default function RestrictedPage(props: RestrictedPageProps) {
   if ('error' in props) {
     return (
       <main css={mainStyles}>

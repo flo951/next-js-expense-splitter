@@ -3,15 +3,15 @@ import {
   Event,
   getAllEventsWhereIdMatches,
   getUserByValidSessionToken,
-} from '../../util/database';
+} from '../util/database';
 import { css } from '@emotion/react';
 import Head from 'next/head';
 import { useState } from 'react';
-import { DeleteEventResponseBody } from '../api/event';
+import { DeleteEventResponseBody } from './api/event';
 import Link from 'next/link';
-import { eventListStyles, personStyles, spanStyles } from '../createevent';
+import { eventListStyles, personStyles, spanStyles } from './createevent';
 import Image from 'next/image';
-import { eventProfilePicStyles, removeButtonStyles } from './[eventId]';
+import { eventProfilePicStyles, removeButtonStyles } from './users/[eventId]';
 
 const mainStyles = css`
   display: flex;
@@ -110,22 +110,20 @@ export default function ProtectedUser({ eventsInDb, user, errors }: Props) {
                   css={flexRowStyles}
                 >
                   <Link href={`/users/${event.id}`}>
-                    <a>
-                      <Image
-                        css={eventProfilePicStyles}
-                        src={
-                          event.imageurl
-                            ? event.imageurl
-                            : '/images/maldives-1993704_640.jpg'
-                        }
-                        alt={`Profile Picture of ${event.eventname}`}
-                        width={50}
-                        height={50}
-                      />
-                      <div css={personStyles}>
-                        <span css={spanStyles}>{event.eventname}</span>
-                      </div>
-                    </a>
+                    <Image
+                      css={eventProfilePicStyles}
+                      src={
+                        event.imageurl
+                          ? event.imageurl
+                          : '/images/maldives-1993704_640.jpg'
+                      }
+                      alt={`Profile Picture of ${event.eventname}`}
+                      width={50}
+                      height={50}
+                    />
+                    <div css={personStyles}>
+                      <span css={spanStyles}>{event.eventname}</span>
+                    </div>
                   </Link>
                   <button
                     css={removeButtonStyles}

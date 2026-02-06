@@ -27,15 +27,15 @@ const resultStyles = css`
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
-type Props = {
-  people: people[];
-  expenses: ExpenseWithParticipants[];
+type BarChartProps = {
+  peopleList: people[];
+  expenseList: ExpenseWithParticipants[];
 };
 
-export default function BarChart(props: Props) {
+export default function BarChart({ peopleList, expenseList }: BarChartProps) {
   const sendExpenseList: string[] = [];
-  props.expenses.map((expense) => {
-    return props.people.map((person) => {
+  expenseList.map((expense) => {
+    return peopleList.map((person) => {
       return (
         person.id === expense.paymaster &&
         sendExpenseList.push(
@@ -47,7 +47,7 @@ export default function BarChart(props: Props) {
     });
   });
 
-  if (props.expenses.length === 0) {
+  if (expenseList.length === 0) {
     return (
       <div css={barChartStyles}>
         <h3>Add People and Expenses to see more</h3>
@@ -55,14 +55,14 @@ export default function BarChart(props: Props) {
     );
   }
 
-  const expensePerPerson = props.people.map((person) => {
+  const expensePerPerson = peopleList.map((person) => {
     // Calculate what this person paid
-    const totalPaid = props.expenses
+    const totalPaid = expenseList
       .filter((expense) => expense.paymaster === person.id)
       .reduce((sum, expense) => sum + (expense.cost || 0) / 100, 0);
 
     // Calculate what this person owes (their share of expenses they're part of)
-    const totalOwed = props.expenses
+    const totalOwed = expenseList
       .filter((expense) => expense.participantIds.includes(person.id))
       .reduce((sum, expense) => {
         const shareAmount =
@@ -96,7 +96,7 @@ export default function BarChart(props: Props) {
   );
   const balanceMessages = splitPayments(payments);
 
-  const peopleNameArray = props.people.map((person) => person.name);
+  const peopleNameArray = peopleList.map((person) => person.name);
 
   const data = {
     labels: peopleNameArray,

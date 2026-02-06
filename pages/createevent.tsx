@@ -93,7 +93,7 @@ export const eventListStyles = css`
   }
 `;
 
-type Props = {
+type CreateEventProps = {
   eventsInDb: events[];
   user?: { id: number; username: string };
 
@@ -102,15 +102,15 @@ type Props = {
 
 export type Errors = { message: string }[];
 
-export default function CreateEvent(props: Props) {
+export default function CreateEvent({ eventsInDb, user, errors }: CreateEventProps) {
   const [eventName, setEventName] = useState('');
-  const [eventList, setEventList] = useState<events[]>(props.eventsInDb);
-  const [errors, setErrors] = useState<Errors | undefined>([]);
+  const [eventList, setEventList] = useState<events[]>(eventsInDb);
+  const [formErrors, setFormErrors] = useState<Errors | undefined>([]);
 
-  if ('errors' in props) {
+  if (errors) {
     return (
       <main>
-        <p>{props.errors}</p>
+        <p>{errors}</p>
       </main>
     );
   }
@@ -122,14 +122,14 @@ export default function CreateEvent(props: Props) {
       },
       body: JSON.stringify({
         eventId: id,
-        user: props.user,
+        user: user,
       }),
     });
     const deleteEventResponseBody =
       (await deleteResponse.json()) as DeleteEventResponseBody;
 
     if ('errors' in deleteEventResponseBody) {
-      setErrors(deleteEventResponseBody.errors);
+      setFormErrors(deleteEventResponseBody.errors);
       return;
     }
 
@@ -160,7 +160,7 @@ export default function CreateEvent(props: Props) {
                 },
                 body: JSON.stringify({
                   eventname: eventName,
-                  user: props.user,
+                  user: user,
                 }),
               });
 
@@ -178,7 +178,7 @@ export default function CreateEvent(props: Props) {
               }
 
               if ('errors' in createEventResponseBody) {
-                setErrors(createEventResponseBody.errors);
+                setFormErrors(createEventResponseBody.errors);
                 return;
               }
             }}
@@ -239,8 +239,8 @@ export default function CreateEvent(props: Props) {
         </div>
 
         <div css={errorStyles}>
-          {errors !== undefined
-            ? errors.map((error) => {
+          {formErrors !== undefined
+            ? formErrors.map((error) => {
                 return (
                   <div key={`error-${error.message}`}>{error.message}</div>
                 );

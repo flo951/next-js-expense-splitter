@@ -12,15 +12,21 @@ import { barChartStyles } from './BarChart';
 const emailFeedbackStyles = css`
   color: green;
 `;
-type Props = {
+type SendEmailProps = {
   user: string;
   expenseList: string[];
   balanceMessages: string[];
   event: Event;
   participants: string[];
 };
-export default function SendEmail(props: Props) {
-  const [name, setName] = useState(props.user);
+export default function SendEmail({
+  user,
+  expenseList,
+  balanceMessages,
+  event,
+  participants,
+}: SendEmailProps) {
+  const [name, setName] = useState(user);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [emailResponse, setEmailResponse] = useState('');
@@ -43,10 +49,10 @@ export default function SendEmail(props: Props) {
               name: name,
               email: email,
               message: message,
-              expenseList: props.expenseList,
-              result: props.balanceMessages,
-              event: props.event,
-              participants: props.participants,
+              expenseList: expenseList,
+              result: balanceMessages,
+              event: event,
+              participants: participants,
             }),
           });
           const createEmailResponseBody = await createEmailResponse.json();

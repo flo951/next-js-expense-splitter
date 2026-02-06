@@ -39,12 +39,12 @@ export const errorStyles = css`
 `;
 type Errors = { message: string }[];
 
-type Props = {
+type LoginProps = {
   refreshUserProfile: () => void;
   csrfToken: string;
 };
 
-export default function Login(props: Props) {
+export default function Login({ refreshUserProfile, csrfToken }: LoginProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Errors>([]);
@@ -72,7 +72,7 @@ export default function Login(props: Props) {
               body: JSON.stringify({
                 username: username,
                 password: password,
-                csrfToken: props.csrfToken,
+                csrfToken: csrfToken,
               }),
             });
 
@@ -98,7 +98,7 @@ export default function Login(props: Props) {
               return;
             }
 
-            props.refreshUserProfile();
+            refreshUserProfile();
             await router
               .push(`/createevent`)
               .catch((error) => console.log(error));

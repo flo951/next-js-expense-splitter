@@ -76,7 +76,7 @@ const flexRowHeaderStyles = css`
   justify-content: space-between;
 `;
 
-type Props = {
+type HeaderProps = {
   userObject?: User;
 };
 
@@ -89,20 +89,20 @@ function Anchor({
   return <a {...restProps}>{children}</a>;
 }
 
-export default function Header(props: Props) {
+export default function Header({ userObject }: HeaderProps) {
   return (
     <header css={headerStyles}>
-      {props.userObject ? (
+      {userObject ? (
         <div css={flexRowHeaderStyles}>
           <div css={flexContainerStyles}>
-            <Link href="/users/overview">Overview</Link>
+            <Link href="/overview">Overview</Link>
             <Link href="/createevent">Create New Event</Link>
           </div>
           <div css={flexContainerStyles}>
             <h3>
               Hi
               <span data-test-id="logged-in-user">
-                {props.userObject.username}
+                {userObject.username}
               </span>
             </h3>
             <Anchor data-test-id="logout" href="/logout">

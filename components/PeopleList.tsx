@@ -15,7 +15,7 @@ import { expenses, people } from '@prisma/client';
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
-type Props = {
+type PeopleListProps = {
   user: User;
   setErrors: (errors: Errors) => void;
   expenseList: ExpenseWithParticipants[];
@@ -24,7 +24,15 @@ type Props = {
   setPeopleList: (people: people[]) => void;
   peopleList: people[];
 };
-export default function PeopleList(props: Props) {
+export default function PeopleList({
+  user,
+  setErrors,
+  expenseList,
+  setExpenseList,
+  eventId,
+  setPeopleList,
+  peopleList,
+}: PeopleListProps) {
   const [personName, setPersonName] = useState('');
 
   // function to delete created people
@@ -36,25 +44,25 @@ export default function PeopleList(props: Props) {
       },
       body: JSON.stringify({
         personId: id,
-        user: props.user,
+        user: user,
       }),
     });
     const deletePersonResponseBody =
       (await deleteResponse.json()) as DeletePersonResponseBody;
 
     if ('errors' in deletePersonResponseBody) {
-      props.setErrors(deletePersonResponseBody.errors);
+      setErrors(deletePersonResponseBody.errors);
       return;
     }
     if ('person' in deletePersonResponseBody) {
-      const newPeopleList = props.peopleList.filter((person) => {
+      const newPeopleList = peopleList.filter((person) => {
         return deletePersonResponseBody.person.id !== person.id;
       });
-      props.setPeopleList(newPeopleList);
+      setPeopleList(newPeopleList);
 
       // Filter out expenses where the deleted person is the paymaster
       // and remove the deleted person from participantIds of remaining expenses
-      const newExpenseList = props.expenseList
+      const newExpenseList = expenseList
         .filter((expense) => {
           return deletePersonResponseBody.person.id !== expense.paymaster;
         })
@@ -64,7 +72,7 @@ export default function PeopleList(props: Props) {
             (id) => id !== deletePersonResponseBody.person.id,
           ),
         }));
-      props.setExpenseList(newExpenseList);
+      setExpenseList(newExpenseList);
 
       return;
     }
@@ -82,8 +90,8 @@ export default function PeopleList(props: Props) {
             },
             body: JSON.stringify({
               name: personName,
-              user: props.user,
-              eventId: props.eventId,
+              user: user,
+              eventId: eventId,
             }),
           });
 
@@ -91,17 +99,17 @@ export default function PeopleList(props: Props) {
             (await createPersonResponse.json()) as DeletePersonResponseBody;
           if ('person' in createPersonResponseBody) {
             const createdPeople: people[] = [
-              ...props.peopleList,
+              ...peopleList,
               createPersonResponseBody.person,
             ];
-            props.setPeopleList(createdPeople);
+            setPeopleList(createdPeople);
 
             setPersonName('');
             return;
           }
 
           if ('errors' in createPersonResponseBody) {
-            props.setErrors(createPersonResponseBody.errors);
+            setErrors(createPersonResponseBody.errors);
             return;
           }
         }}
@@ -126,12 +134,12 @@ export default function PeopleList(props: Props) {
         />
       </form>
       <div css={divPersonListStyles}>
-        {props.peopleList.map((person: people) => {
+        {peopleList.map((person: people) => {
           return (
-            person.event_id === props.eventId && (
+            person.event_id === eventId && (
               <div
                 data-test-id={`person-width-id-${person.id}`}
-                key={`this is ${person.name} witdh ${person.id} from event ${props.eventId}`}
+                key={`this is ${person.name} witdh ${person.id} from event ${eventId}`}
               >
                 <div css={personStyles}>
                   <span

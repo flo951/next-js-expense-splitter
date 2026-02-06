@@ -202,7 +202,7 @@ export const loadingCircleStyles = css`
 export type ImageUrl = {
   imageurl: string;
 };
-type Props = {
+type UserDetailProps = {
   user: { id: number; username: string };
   eventInDb: Event;
   errors: string;
@@ -213,24 +213,33 @@ type Props = {
   uploadPreset: string;
 };
 
-export default function UserDetail(props: Props) {
-  const [eventList, setEventList] = useState<Event[]>([props.eventInDb]);
-  const [peopleList, setPeopleList] = useState<people[]>(props.peopleInDb);
+export default function UserDetail({
+  user,
+  eventInDb,
+  errors,
+  peopleInDb,
+  expensesInDb,
+  profileImageInDb,
+  cloudName,
+  uploadPreset,
+}: UserDetailProps) {
+  const [eventList, setEventList] = useState<Event[]>([eventInDb]);
+  const [peopleList, setPeopleList] = useState<people[]>(peopleInDb);
   const [personExpense, setPersonExpense] = useState('');
   const [expenseName, setExpenseName] = useState('');
   const [selectedPersonId, setSelectedPersonId] = useState<number>(0);
   const [selectedParticipants, setSelectedParticipants] = useState<number[]>(
-    props.peopleInDb.map((p) => p.id),
+    peopleInDb.map((p) => p.id),
   );
   const [sumEventCosts, setSumEventCosts] = useState('0');
-  const [errors, setErrors] = useState<Errors | undefined>([]);
+  const [formErrors, setFormErrors] = useState<Errors | undefined>([]);
   const [expenseError, setExpenseError] = useState('');
   const [uploadError, setUploadError] = useState('');
   const [expenseList, setExpenseList] = useState<ExpenseWithParticipants[]>(
-    props.expensesInDb,
+    expensesInDb,
   );
   const [uploadImage, setUploadImage] = useState<FileList>();
-  const [imageUrl, setImageUrl] = useState(props.profileImageInDb.imageurl);
+  const [imageUrl, setImageUrl] = useState(profileImageInDb.imageurl);
   const [isLoading, setIsLoading] = useState<Boolean>();
   const [editButtonImageUpload, setEditButtonImageUpload] =
     useState<Boolean>(false);
@@ -238,7 +247,7 @@ export default function UserDetail(props: Props) {
 
   useEffect(() => {
     function calculateTotalSumPerEvent() {
-      if (typeof props.eventInDb === 'undefined') {
+      if (typeof eventInDb === 'undefined') {
         return;
       }
 
@@ -250,13 +259,13 @@ export default function UserDetail(props: Props) {
       setSumEventCosts(sum.toFixed(2));
     }
     calculateTotalSumPerEvent();
-  }, [expenseList, props.eventInDb]);
+  }, [expenseList, eventInDb]);
 
   // Reset selectedParticipants when peopleList changes (new person added)
   useEffect(() => {
     setSelectedParticipants(peopleList.map((p) => p.id));
   }, [peopleList]);
-  if (props.errors) {
+  if (errors) {
     return (
       <>
         <Head>
@@ -266,7 +275,7 @@ export default function UserDetail(props: Props) {
             content="You are not allowed to see this page"
           />
         </Head>
-        <h1>{props.errors}</h1>
+        <h1>{errors}</h1>
       </>
     );
   }
@@ -284,7 +293,7 @@ export default function UserDetail(props: Props) {
     const deleteExpenseResponseBody =
       (await deleteResponse.json()) as DeleteExpenseResponseBody;
     if ('errors' in deleteExpenseResponseBody) {
-      setErrors(deleteExpenseResponseBody.errors);
+      setFormErrors(deleteExpenseResponseBody.errors);
       return;
     }
 
@@ -315,14 +324,14 @@ export default function UserDetail(props: Props) {
       },
       body: JSON.stringify({
         eventId: id,
-        user: props.user,
+        user: user,
       }),
     });
     const deleteEventResponseBody =
       (await deleteResponse.json()) as DeleteEventResponseBody;
     console.log(deleteEventResponseBody);
     if ('errors' in deleteEventResponseBody) {
-      setErrors(deleteEventResponseBody.errors);
+      setFormErrors(deleteEventResponseBody.errors);
       return;
     }
 
@@ -345,10 +354,10 @@ export default function UserDetail(props: Props) {
     setIsLoading(true);
     const formData = new FormData();
     formData.append('file', uploadImage[0]);
-    formData.append('upload_preset', props.uploadPreset);
+    formData.append('upload_preset', uploadPreset);
 
     const uploadResponse = await fetch(
-      `https://api.cloudinary.com/v1_1/${props.cloudName}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       {
         method: 'POST',
         body: formData,
@@ -371,7 +380,7 @@ export default function UserDetail(props: Props) {
     setImageUrl(uploadUrl);
 
     if ('errors' in uploadImageEventResponseBody) {
-      setErrors(uploadImageEventResponseBody.errors);
+      setFormErrors(uploadImageEventResponseBody.errors);
       return;
     }
 
@@ -390,7 +399,7 @@ export default function UserDetail(props: Props) {
       (await createEventResponse.json()) as CreateEventResponseBody;
 
     if ('errors' in createEventResponseBody) {
-      setErrors(createEventResponseBody.errors);
+      setFormErrors(createEventResponseBody.errors);
       return;
     }
 
@@ -401,7 +410,7 @@ export default function UserDetail(props: Props) {
   return (
     <>
       <Head>
-        <title>Event {props.eventInDb.eventname}</title>
+        <title>Event {eventInDb.eventname}</title>
 
         <meta
           name="description"
@@ -494,15 +503,15 @@ export default function UserDetail(props: Props) {
                 <PeopleList
                   peopleList={peopleList}
                   setPeopleList={setPeopleList}
-                  user={props.user}
-                  setErrors={setErrors}
+                  user={user}
+                  setErrors={setFormErrors}
                   expenseList={expenseList}
                   setExpenseList={setExpenseList}
-                  eventId={props.eventInDb.id}
+                  eventId={eventInDb.id}
                 />
-                {errors && (
+                {formErrors && (
                   <div css={errorStyles}>
-                    {errors.map((error) => {
+                    {formErrors.map((error) => {
                       return (
                         <div key={`error-${error.message}`}>
                           {error.message}
@@ -526,9 +535,9 @@ export default function UserDetail(props: Props) {
                   setExpenseName={setExpenseName}
                   expenseList={expenseList}
                   setExpenseList={setExpenseList}
-                  setErrors={setErrors}
+                  setErrors={setFormErrors}
                   peopleList={peopleList}
-                  eventId={props.eventInDb.id}
+                  eventId={eventInDb.id}
                   deleteExpense={deleteExpense}
                   handleSelectPerson={handleSelectPerson}
                 />
