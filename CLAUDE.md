@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Splitify is a Next.js expense-splitting web application. Users can create events, add participants, track expenses, and calculate who owes what to whom. Features include user authentication, expense visualization with charts, and email notifications.
+Splitify is a Next.js expense-splitting web application. Users can create events, add participants, track expenses, and calculate who owes what to whom. Features include user authentication and expense visualization with charts.
 
 ## Commands
 
@@ -16,8 +16,10 @@ yarn dev              # Start development server at http://localhost:3000
 yarn build            # Generate Prisma client and build for production
 yarn start            # Start production server
 
-# Linting
+# Linting & Formatting
 yarn lint             # Run ESLint
+yarn format           # Format all files with Prettier
+yarn format:check     # Check formatting without writing
 
 # Database
 yarn migrate up       # Run database migrations
@@ -26,17 +28,14 @@ yarn migrate down     # Rollback migrations
 # Testing
 yarn jest             # Run unit tests (util/__tests__/)
 yarn jest --watch     # Run tests in watch mode
-yarn jest util/__tests__/splitExpenses.test.ts  # Run single test file
 ```
-
-For E2E tests with Puppeteer (integration/), uncomment the jest-puppeteer preset in `jest.config.mjs` and run against a built app (`yarn build && yarn start`).
 
 ## Architecture
 
 ### Tech Stack
 
-- **Framework**: Next.js with Pages Router
-- **Database**: PostgreSQL via Prisma ORM
+- **Framework**: Next.js 16 with Pages Router
+- **Database**: PostgreSQL via Prisma ORM v7
 - **Styling**: Emotion CSS-in-JS
 - **Auth**: Cookie-based sessions with bcrypt password hashing
 
@@ -64,12 +63,13 @@ For E2E tests with Puppeteer (integration/), uncomment the jest-puppeteer preset
 - User state managed in `_app.tsx` via `/api/profile` endpoint
 - All database operations go through `util/database.ts`
 - Authorization checks use `getUserByValidSessionToken()` with session cookie
+- Prisma v7 uses driver adapters pattern for database connection
 
 ## Environment Variables
 
 Required in `.env` (see `.env.example`):
 
-- `POSTGRES_PRISMA_URL` / `POSTGRES_URL_NON_POOLING` - Database connection
-- `CSRF_SECRET_SALT` - CSRF protection
+- `POSTGRES_PRISMA_URL` - Database connection URL (pooled)
+- `POSTGRES_URL_NON_POOLING` - Database connection URL (direct, for migrations)
+- `CSRF_SECRET_SALT` - CSRF protection secret
 - `CLOUD_NAME`, `UPLOAD_PRESET` - Cloudinary for image uploads
-- `CLIENT_ID`, `CLIENT_SECRET`, `REFRESH_TOKEN` - Gmail API for email sending

@@ -101,8 +101,9 @@ const Header = ({ userObject }: HeaderProps) => {
           </div>
           <div css={flexContainerStyles}>
             <h3>
-              Hi
-              <span data-test-id="logged-in-user">{userObject.username}</span>
+              <span data-test-id="logged-in-user">
+                Hi {userObject.username}
+              </span>
             </h3>
             <Anchor data-test-id="logout" href="/logout">
               Logout
