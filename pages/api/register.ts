@@ -1,11 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcrypt'
-import type {
-  User} from '../../util/database'
+import type { User } from '../../util/database'
 import {
   createSession,
   createUser,
-  getUserByUsername
+  getUserByUsername,
 } from '../../util/database'
 
 import { createSerializedRegisterSessionTokenCookie } from '../../util/cookies'
@@ -13,18 +12,18 @@ import crypto from 'node:crypto'
 import { verifyCsrfToken } from '../../util/auth'
 
 type RegisterRequestBody = {
-  username: string;
-  password: string;
-  csrfToken: string;
-};
+  username: string
+  password: string
+  csrfToken: string
+}
 
 type RegisterNextApiRequest = Omit<NextApiRequest, 'body'> & {
-  body: RegisterRequestBody;
-};
+  body: RegisterRequestBody
+}
 
 export type RegisterResponseBody =
   | { errors: { message: string }[] }
-  | { user: User };
+  | { user: User }
 
 export default async function registerHandler(
   request: RegisterNextApiRequest,

@@ -1,8 +1,8 @@
-import { config } from 'dotenv-safe';
-import { google } from 'googleapis';
-import nodemailer from 'nodemailer';
+import { config } from 'dotenv-safe'
+import { google } from 'googleapis'
+import nodemailer from 'nodemailer'
 
-config();
+config()
 // type CreateEmailRequestBody = {
 //   name: string;
 //   message: string;
@@ -60,24 +60,24 @@ export default async function createEmailHandler(request, response) {
       // 400 bad request
       response.status(400).json({
         errors: [{ message: 'Something went wrong' }],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
 
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
-    const refreshToken = process.env.REFRESH_TOKEN;
+    const clientId = process.env.CLIENT_ID
+    const clientSecret = process.env.CLIENT_SECRET
+    const refreshToken = process.env.REFRESH_TOKEN
 
     const myOAuth2Client = new google.auth.OAuth2(
       clientId,
       clientSecret,
       'https://developers.google.com/oauthplayground',
-    );
+    )
 
     myOAuth2Client.setCredentials({
       refresh_token: refreshToken,
-    });
-    const myAccessToken = myOAuth2Client.getAccessToken();
+    })
+    const myAccessToken = myOAuth2Client.getAccessToken()
 
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -88,7 +88,7 @@ export default async function createEmailHandler(request, response) {
         clientId: clientId,
         clientSecret: clientSecret,
       },
-    });
+    })
     // SentMessageInfo is type directly from nodemailer dependency
     const mailData = await transporter.sendMail({
       from: 'expensesplitterbot@gmail.com',
@@ -112,10 +112,10 @@ export default async function createEmailHandler(request, response) {
         refreshToken: refreshToken,
         accessToken: myAccessToken,
       },
-    });
-    response.status(200).json({ mailData: mailData });
-    return;
+    })
+    response.status(200).json({ mailData: mailData })
+    return
   }
 
-  response.status(405).json({ errors: [{ message: 'Method not supported' }] });
+  response.status(405).json({ errors: [{ message: 'Method not supported' }] })
 }

@@ -78,14 +78,14 @@ const flexRowHeaderStyles = css`
 `
 
 type HeaderProps = {
-  userObject?: User;
-};
+  userObject?: User
+}
 
 const Anchor = ({
   children,
   ...restProps
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
-  css?: Interpolation<Theme>;
+  css?: Interpolation<Theme>
 }) => {
   return <a {...restProps}>{children}</a>
 }
@@ -102,9 +102,7 @@ const Header = ({ userObject }: HeaderProps) => {
           <div css={flexContainerStyles}>
             <h3>
               Hi
-              <span data-test-id="logged-in-user">
-                {userObject.username}
-              </span>
+              <span data-test-id="logged-in-user">{userObject.username}</span>
             </h3>
             <Anchor data-test-id="logout" href="/logout">
               Logout

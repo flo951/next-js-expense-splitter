@@ -7,6 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "migrate": "dotenv ley",
     "heroku-postbuild": "yarn migrate up && yarn build"
   },
@@ -51,6 +53,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "29",
     "jest-puppeteer": "^11.0.0",
+    "prettier": "^3.8.1",
     "prisma": "^7.3.0",
     "puppeteer": "^24.8.0",
     "ts-jest": "^29.3.4",

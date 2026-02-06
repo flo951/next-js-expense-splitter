@@ -3,9 +3,9 @@ import Head from 'next/head'
 import type { User } from '../util/database'
 import Header from './Header'
 type LayoutProps = {
-  children: ReactNode;
-  userObject?: User;
-};
+  children: ReactNode
+  userObject?: User
+}
 const Layout = ({ children, userObject }: LayoutProps) => {
   return (
     <>

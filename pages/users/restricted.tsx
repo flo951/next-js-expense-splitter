@@ -1,9 +1,8 @@
 import type { GetServerSidePropsContext } from 'next'
-import type {
-  User} from '../../util/database'
+import type { User } from '../../util/database'
 import {
   getUserByValidSessionToken,
-  getValidSessionByToken
+  getValidSessionByToken,
 } from '../../util/database'
 import { css } from '@emotion/react'
 
@@ -13,11 +12,11 @@ const mainStyles = css`
 
 type RestrictedPageProps =
   | {
-      user: User;
+      user: User
     }
   | {
-      error: string;
-    };
+      error: string
+    }
 
 const RestrictedPage = (props: RestrictedPageProps) => {
   if ('error' in props) {
@@ -37,7 +36,9 @@ const RestrictedPage = (props: RestrictedPageProps) => {
 
 export default RestrictedPage
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   const sessionToken = context.req.cookies.sessionToken
   const session = await getValidSessionByToken(sessionToken)
 

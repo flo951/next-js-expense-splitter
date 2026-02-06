@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { DeletePersonResponseBody } from '../pages/api/person'
-import type {
-  Errors} from '../pages/createevent'
+import type { Errors } from '../pages/createevent'
 import {
   divPersonListStyles,
   formStyles,
@@ -14,17 +13,17 @@ import { removeButtonStyles } from '../pages/users/[eventId]'
 import type { User } from '../util/database'
 import type { expenses, people } from '@prisma/client'
 
-type ExpenseWithParticipants = expenses & { participantIds: number[] };
+type ExpenseWithParticipants = expenses & { participantIds: number[] }
 
 type PeopleListProps = {
-  user: User;
-  setErrors: (errors: Errors) => void;
-  expenseList: ExpenseWithParticipants[];
-  setExpenseList: (expense: ExpenseWithParticipants[]) => void;
-  eventId: number;
-  setPeopleList: (people: people[]) => void;
-  peopleList: people[];
-};
+  user: User
+  setErrors: (errors: Errors) => void
+  expenseList: ExpenseWithParticipants[]
+  setExpenseList: (expense: ExpenseWithParticipants[]) => void
+  eventId: number
+  setPeopleList: (people: people[]) => void
+  peopleList: people[]
+}
 const PeopleList = ({
   user,
   setErrors,

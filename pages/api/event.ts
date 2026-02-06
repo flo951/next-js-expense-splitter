@@ -1,33 +1,32 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type {
-  User} from '../../util/database'
+import type { User } from '../../util/database'
 import {
   createEvent,
   deleteEventById,
   getUserByValidSessionToken,
-  insertImageUrlEvent
+  insertImageUrlEvent,
 } from '../../util/database'
 import type { events } from '@prisma/client'
 
 export type CreateEventResponseBody =
   | { errors: { message: string }[] }
   | { event: events }
-  | { imageurl: events };
+  | { imageurl: events }
 
 export type DeleteEventResponseBody =
   | { errors: { message: string }[] }
-  | { event: events };
+  | { event: events }
 
 type CreateEventRequestBody = {
-  eventname: string;
-  user: User;
-  eventId?: number;
-  uploadUrl: string;
-};
+  eventname: string
+  user: User
+  eventId?: number
+  uploadUrl: string
+}
 
 type CreateEventNextApiRequest = Omit<NextApiRequest, 'body'> & {
-  body: CreateEventRequestBody;
-};
+  body: CreateEventRequestBody
+}
 
 export default async function createEventHandler(
   request: CreateEventNextApiRequest,

@@ -8,7 +8,10 @@ import {
   getUserByValidSessionToken,
   getValidSessionByToken,
 } from '../util/database'
-import type { CreateEventResponseBody, DeleteEventResponseBody } from './api/event'
+import type {
+  CreateEventResponseBody,
+  DeleteEventResponseBody,
+} from './api/event'
 import { removeButtonStyles } from './users/[eventId]'
 import type { events } from '@prisma/client'
 
@@ -93,13 +96,13 @@ export const eventListStyles = css`
 `
 
 type CreateEventProps = {
-  eventsInDb: events[];
-  user?: { id: number; username: string };
+  eventsInDb: events[]
+  user?: { id: number; username: string }
 
-  errors?: string;
-};
+  errors?: string
+}
 
-export type Errors = { message: string }[];
+export type Errors = { message: string }[]
 
 const CreateEvent = ({ eventsInDb, user, errors }: CreateEventProps) => {
   const [eventName, setEventName] = useState('')
@@ -239,9 +242,7 @@ const CreateEvent = ({ eventsInDb, user, errors }: CreateEventProps) => {
         <div css={errorStyles}>
           {formErrors !== undefined
             ? formErrors.map((error) => {
-                return (
-                  <div key={`error-${error.message}`}>{error.message}</div>
-                )
+                return <div key={`error-${error.message}`}>{error.message}</div>
               })
             : ''}
         </div>
@@ -252,7 +253,9 @@ const CreateEvent = ({ eventsInDb, user, errors }: CreateEventProps) => {
 
 export default CreateEvent
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   const sessionToken = context.req.cookies.sessionToken
   const session = await getValidSessionByToken(sessionToken)
   if (!session) {

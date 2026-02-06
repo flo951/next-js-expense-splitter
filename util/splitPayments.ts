@@ -2,15 +2,15 @@
  * Represents a payment transaction from one person to another
  */
 export type Transaction = {
-  from: string;
-  to: string;
-  amount: number;
-};
+  from: string
+  to: string
+  amount: number
+}
 
 /**
  * Represents a person's balance (positive = should receive, negative = owes)
  */
-export type Balances = Record<string, number>;
+export type Balances = Record<string, number>
 
 /**
  * Calculates the minimum number of transactions needed to settle all debts.

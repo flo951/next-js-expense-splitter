@@ -8,8 +8,7 @@ import BarChart from '../../components/BarChart'
 import ExpenseList from '../../components/ExpenseList'
 import PeopleList from '../../components/PeopleList'
 
-import type {
-  Event} from '../../util/database'
+import type { Event } from '../../util/database'
 import {
   getAllExpensesWhereIdMatches,
   getAllPeopleWhereEventIdMatches,
@@ -17,14 +16,17 @@ import {
   getSingleEvent,
   getUserByValidSessionToken,
 } from '../../util/database'
-import type { CreateEventResponseBody, DeleteEventResponseBody } from '../api/event'
+import type {
+  CreateEventResponseBody,
+  DeleteEventResponseBody,
+} from '../api/event'
 import type { DeleteExpenseResponseBody } from '../api/expense'
-import type { Errors} from '../createevent'
+import type { Errors } from '../createevent'
 import { spanStyles } from '../createevent'
 import { errorStyles } from '../login'
 import type { expenses, people } from '@prisma/client'
 
-type ExpenseWithParticipants = expenses & { participantIds: number[] };
+type ExpenseWithParticipants = expenses & { participantIds: number[] }
 
 const mainStyles = css`
   margin: 12px;
@@ -73,8 +75,9 @@ export const selectStyles = css`
 `
 export const inputExpenseStyles = css`
   padding: 8px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 20px;
 `
 export const expenseContainerStyles = css`
@@ -200,18 +203,18 @@ export const loadingCircleStyles = css`
 `
 
 export type ImageUrl = {
-  imageurl: string;
-};
+  imageurl: string
+}
 type UserDetailProps = {
-  user: { id: number; username: string };
-  eventInDb: Event;
-  errors: string;
-  peopleInDb: people[];
-  expensesInDb: ExpenseWithParticipants[];
-  profileImageInDb: ImageUrl;
-  cloudName: string;
-  uploadPreset: string;
-};
+  user: { id: number; username: string }
+  eventInDb: Event
+  errors: string
+  peopleInDb: people[]
+  expensesInDb: ExpenseWithParticipants[]
+  profileImageInDb: ImageUrl
+  cloudName: string
+  uploadPreset: string
+}
 
 const UserDetail = ({
   user,
@@ -235,9 +238,8 @@ const UserDetail = ({
   const [formErrors, setFormErrors] = useState<Errors | undefined>([])
   const [expenseError, setExpenseError] = useState('')
   const [uploadError, setUploadError] = useState('')
-  const [expenseList, setExpenseList] = useState<ExpenseWithParticipants[]>(
-    expensesInDb,
-  )
+  const [expenseList, setExpenseList] =
+    useState<ExpenseWithParticipants[]>(expensesInDb)
   const [uploadImage, setUploadImage] = useState<FileList>()
   const [imageUrl, setImageUrl] = useState(profileImageInDb.imageurl)
   const [isLoading, setIsLoading] = useState<boolean>()
@@ -363,9 +365,9 @@ const UserDetail = ({
       },
     )
     type CreateImageUploadResponseBody = {
-      url: string;
-      errors: { message: string }[];
-    };
+      url: string
+      errors: { message: string }[]
+    }
 
     const uploadImageEventResponseBody =
       (await uploadResponse.json()) as CreateImageUploadResponseBody
@@ -558,7 +560,9 @@ const UserDetail = ({
 
 export default UserDetail
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   const eventId = context.query.eventId as string
 
   const token = context.req.cookies.sessionToken

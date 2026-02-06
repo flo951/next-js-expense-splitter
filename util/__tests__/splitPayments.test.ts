@@ -1,10 +1,8 @@
-import type {
-  Transaction,
-  Balances} from '../splitPayments'
+import type { Transaction, Balances } from '../splitPayments'
 import {
   calculateSettlements,
   splitPayments,
-  formatTransaction
+  formatTransaction,
 } from '../splitPayments'
 
 describe('calculateSettlements', () => {
