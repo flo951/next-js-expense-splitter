@@ -22,6 +22,7 @@ export default tseslint.config(
       'out/**',
       'public/**',
       'integration/**',
+      'next-env.d.ts',
     ],
   },
   {
