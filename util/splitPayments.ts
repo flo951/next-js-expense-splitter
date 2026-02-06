@@ -26,75 +26,75 @@ export type Balances = Record<string, number>;
  * @returns Array of transactions to settle all debts
  */
 export function calculateSettlements(balances: Balances): Transaction[] {
-  const people = Object.keys(balances);
+  const people = Object.keys(balances)
 
   if (people.length < 2) {
-    return [];
+    return []
   }
 
   // Create sorted array of [name, balance] pairs, from most negative to most positive
   const sortedBalances = people
     .map((name) => ({ name, balance: balances[name] }))
-    .sort((a, b) => a.balance - b.balance);
+    .sort((a, b) => a.balance - b.balance)
 
   // Work with a mutable copy of balances for the algorithm
-  const remainingBalances = sortedBalances.map((p) => p.balance);
-  const sortedNames = sortedBalances.map((p) => p.name);
+  const remainingBalances = sortedBalances.map((p) => p.balance)
+  const sortedNames = sortedBalances.map((p) => p.name)
 
-  const transactions: Transaction[] = [];
+  const transactions: Transaction[] = []
 
-  let debtorIndex = 0; // Points to person who owes the most
-  let creditorIndex = people.length - 1; // Points to person owed the most
+  let debtorIndex = 0 // Points to person who owes the most
+  let creditorIndex = people.length - 1 // Points to person owed the most
 
   while (debtorIndex < creditorIndex) {
-    const amountOwed = -remainingBalances[debtorIndex]; // Convert negative to positive
-    const amountToReceive = remainingBalances[creditorIndex];
+    const amountOwed = -remainingBalances[debtorIndex] // Convert negative to positive
+    const amountToReceive = remainingBalances[creditorIndex]
 
     // Skip if either party has no balance to settle
     if (amountOwed <= 0) {
-      debtorIndex++;
-      continue;
+      debtorIndex++
+      continue
     }
     if (amountToReceive <= 0) {
-      creditorIndex--;
-      continue;
+      creditorIndex--
+      continue
     }
 
     // Transfer the smaller of the two amounts
-    const transferAmount = Math.min(amountOwed, amountToReceive);
+    const transferAmount = Math.min(amountOwed, amountToReceive)
 
     // Round to avoid floating point issues
-    const roundedAmount = Math.round(transferAmount * 100) / 100;
+    const roundedAmount = Math.round(transferAmount * 100) / 100
 
     if (roundedAmount > 0) {
       transactions.push({
         from: sortedNames[debtorIndex],
         to: sortedNames[creditorIndex],
         amount: roundedAmount,
-      });
+      })
     }
 
     // Update balances
-    remainingBalances[debtorIndex] += transferAmount;
-    remainingBalances[creditorIndex] -= transferAmount;
+    remainingBalances[debtorIndex] += transferAmount
+    remainingBalances[creditorIndex] -= transferAmount
 
     // Move pointers if balance is settled (using small epsilon for float comparison)
     if (Math.abs(remainingBalances[debtorIndex]) < 0.01) {
-      debtorIndex++;
+      debtorIndex++
     }
     if (Math.abs(remainingBalances[creditorIndex]) < 0.01) {
-      creditorIndex--;
+      creditorIndex--
     }
   }
 
-  return transactions;
+  return transactions
 }
 
 /**
  * Formats a transaction as a human-readable string
  */
 export function formatTransaction(transaction: Transaction): string {
-  return `${transaction.from} owes ${transaction.to} ${transaction.amount.toFixed(2)}€`;
+  return `${transaction.from} owes ${transaction.to} ${transaction.amount.toFixed(2)}€`
 }
 
 /**
@@ -105,6 +105,6 @@ export function formatTransaction(transaction: Transaction): string {
  * @returns Array of formatted strings describing who owes whom
  */
 export function splitPayments(balances: Balances): string[] {
-  const transactions = calculateSettlements(balances);
-  return transactions.map((t) => ` ${formatTransaction(t)}`);
+  const transactions = calculateSettlements(balances)
+  return transactions.map((t) => ` ${formatTransaction(t)}`)
 }

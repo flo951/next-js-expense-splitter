@@ -1,27 +1,27 @@
-import { css, Global } from '@emotion/react';
-import { AppProps } from 'next/app';
-import { useCallback, useEffect, useState } from 'react';
-import Layout from '../components/Layout';
+import { css, Global } from '@emotion/react'
+import type { AppProps } from 'next/app'
+import { useCallback, useEffect, useState } from 'react'
+import Layout from '../components/Layout'
 
-function MyApp({ Component, pageProps }: AppProps) {
-  const [user, setUser] = useState();
+const MyApp = ({ Component, pageProps }: AppProps) => {
+  const [user, setUser] = useState()
 
   const refreshUserProfile = useCallback(async () => {
-    const response = await fetch('/api/profile');
-    const data = await response.json();
+    const response = await fetch('/api/profile')
+    const data = await response.json()
 
     if ('errors' in data) {
-      console.log(data.errors);
-      setUser(undefined);
-      return;
+      console.error(data.errors)
+      setUser(undefined)
+      return
     }
 
-    setUser(data.user);
-  }, []);
+    setUser(data.user)
+  }, [])
 
   useEffect(() => {
-    refreshUserProfile().catch(() => {});
-  }, [refreshUserProfile]);
+    refreshUserProfile().catch(() => {})
+  }, [refreshUserProfile])
   return (
     <>
       <Global
@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Component {...pageProps} refreshUserProfile={refreshUserProfile} />
       </Layout>
     </>
-  );
+  )
 }
 
-export default MyApp;
+export default MyApp

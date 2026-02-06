@@ -1,12 +1,12 @@
-import { css } from '@emotion/react';
-import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
-import { formContainerStyles, formStyles } from '../styles/styles';
-import { createCsrfToken } from '../util/auth';
-import { getValidSessionByToken } from '../util/database';
-import { LoginResponseBody } from './api/login';
+import { css } from '@emotion/react'
+import type { GetServerSidePropsContext } from 'next'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { formContainerStyles, formStyles } from '../styles/styles'
+import { createCsrfToken } from '../util/auth'
+import { getValidSessionByToken } from '../util/database'
+import type { LoginResponseBody } from './api/login'
 
 const nameInputStyles = css`
   padding: 8px 8px;
@@ -16,7 +16,7 @@ const nameInputStyles = css`
   :focus {
     transition: 0.3s ease-out;
   }
-`;
+`
 
 export const inputSubmitStyles = css`
   padding: 8px 8px;
@@ -27,28 +27,28 @@ export const inputSubmitStyles = css`
   font-size: 20px;
   width: 100%;
   cursor: pointer;
-`;
+`
 
 const spanLabelStyles = css`
   font-size: 20px;
   margin-bottom: 12px;
-`;
+`
 export const errorStyles = css`
   color: red;
   font-size: 20px;
-`;
+`
 type Errors = { message: string }[];
 
-type Props = {
+type LoginProps = {
   refreshUserProfile: () => void;
   csrfToken: string;
 };
 
-export default function Login(props: Props) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<Errors>([]);
-  const router = useRouter();
+const Login = ({ refreshUserProfile, csrfToken }: LoginProps) => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<Errors>([])
+  const router = useRouter()
 
   return (
     <>
@@ -62,7 +62,7 @@ export default function Login(props: Props) {
         <form
           css={formStyles}
           onSubmit={async (e) => {
-            e.preventDefault();
+            e.preventDefault()
 
             const loginResponse = await fetch('/api/login', {
               method: 'POST',
@@ -72,20 +72,20 @@ export default function Login(props: Props) {
               body: JSON.stringify({
                 username: username,
                 password: password,
-                csrfToken: props.csrfToken,
+                csrfToken: csrfToken,
               }),
-            });
+            })
 
             const loginResponseBody =
-              (await loginResponse.json()) as LoginResponseBody;
+              (await loginResponse.json()) as LoginResponseBody
 
             if ('errors' in loginResponseBody) {
-              setErrors(loginResponseBody.errors);
-              return;
+              setErrors(loginResponseBody.errors)
+              return
             }
 
             // get the query paramaeter from next.js router
-            const returnTo = router.query.returnTo;
+            const returnTo = router.query.returnTo
 
             if (
               returnTo &&
@@ -94,14 +94,14 @@ export default function Login(props: Props) {
               // regexpressions
               /^\/[a-zA-Z0-9-?=]*$/.test(returnTo)
             ) {
-              await router.push(returnTo);
-              return;
+              await router.push(returnTo)
+              return
             }
 
-            props.refreshUserProfile();
+            refreshUserProfile()
             await router
               .push(`/createevent`)
-              .catch((error) => console.log(error));
+              .catch((error) => console.error(error))
           }}
         >
           <label htmlFor="username">
@@ -137,27 +137,32 @@ export default function Login(props: Props) {
         </form>
         <div css={errorStyles}>
           {errors.map((error) => {
-            return <div key={`error-${error.message}`}>{error.message}</div>;
+            return <div key={`error-${error.message}`}>{error.message}</div>
           })}
         </div>
       </div>
     </>
-  );
+  )
 }
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+
+export default Login
+
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   // 1. check if there is a token and is valid from the cookie
 
-  const token = context.req.cookies.sessionToken;
+  const token = context.req.cookies.sessionToken
   // 2. if its valid redirect otherwise render the page
   if (token) {
-    const session = await getValidSessionByToken(token);
+    const session = await getValidSessionByToken(token)
     if (session) {
       return {
         redirect: {
           destination: '/',
           permanent: false,
         },
-      };
+      }
     }
   }
   // 3. Otherwise, generate CSRF token and render the page
@@ -166,5 +171,5 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props: {
       csrfToken: createCsrfToken(),
     },
-  };
+  }
 }

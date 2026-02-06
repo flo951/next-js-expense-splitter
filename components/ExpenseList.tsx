@@ -1,7 +1,8 @@
-import { css } from '@emotion/react';
-import { expenses, people } from '@prisma/client';
-import { CreateExpenseResponseBody } from '../pages/api/expense';
-import { Errors, formStyles, spanStyles } from '../pages/createevent';
+import { css } from '@emotion/react'
+import type { expenses, people } from '@prisma/client'
+import type { CreateExpenseResponseBody } from '../pages/api/expense'
+import type { Errors} from '../pages/createevent'
+import { formStyles, spanStyles } from '../pages/createevent'
 import {
   expenseContainerStyles,
   expenseDetailStyles,
@@ -10,7 +11,7 @@ import {
   removeButtonStyles,
   selectStyles,
   spanErrorStyles,
-} from '../pages/users/[eventId]';
+} from '../pages/users/[eventId]'
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
@@ -23,7 +24,7 @@ const participantCheckboxContainerStyles = css`
   border-radius: 4px;
   max-height: 150px;
   overflow-y: auto;
-`;
+`
 
 const checkboxLabelStyles = css`
   display: flex;
@@ -39,15 +40,15 @@ const checkboxLabelStyles = css`
   &:hover {
     background-color: #f0f0f0;
   }
-`;
+`
 
 const participantListStyles = css`
   font-size: 12px;
   color: #666;
   margin-top: 2px;
-`;
+`
 
-type Props = {
+type ExpenseListProps = {
   personExpense: string;
   setPersonExpense: (person: string) => void;
   expenseError: string;
@@ -65,35 +66,52 @@ type Props = {
   deleteExpense: (expenseId: number) => void;
   handleSelectPerson: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 };
-export default function ExpenseList(props: Props) {
+const ExpenseList = ({
+  personExpense,
+  setPersonExpense,
+  expenseError,
+  setExpenseError,
+  selectedPersonId,
+  selectedParticipants,
+  setSelectedParticipants,
+  expenseName,
+  setExpenseName,
+  expenseList,
+  setExpenseList,
+  setErrors,
+  peopleList,
+  eventId,
+  deleteExpense,
+  handleSelectPerson,
+}: ExpenseListProps) => {
   return (
     <>
       <form
         css={formStyles}
         onSubmit={async (e) => {
-          e.preventDefault();
+          e.preventDefault()
 
-          if (parseFloat(props.personExpense) <= 0) {
-            props.setExpenseError(
+          if (parseFloat(personExpense) <= 0) {
+            setExpenseError(
               'Invalid input, please enter a positive value',
-            );
-            return;
+            )
+            return
           }
-          const testNumber: number = parseInt(props.personExpense);
+          const testNumber: number = parseInt(personExpense)
 
           if (!Number.isInteger(testNumber)) {
-            props.setExpenseError('Invalid input, please enter a number');
-            return;
+            setExpenseError('Invalid input, please enter a number')
+            return
           }
 
-          if (props.selectedPersonId === 0) {
-            props.setExpenseError('Please select a person');
-            return;
+          if (selectedPersonId === 0) {
+            setExpenseError('Please select a person')
+            return
           }
 
-          if (props.selectedParticipants.length === 0) {
-            props.setExpenseError('Please select at least one participant');
-            return;
+          if (selectedParticipants.length === 0) {
+            setExpenseError('Please select at least one participant')
+            return
           }
 
           const createPersonResponse = await fetch('/api/expense', {
@@ -102,35 +120,35 @@ export default function ExpenseList(props: Props) {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              expensename: props.expenseName,
-              cost: parseFloat(props.personExpense) * 100,
-              eventId: props.eventId,
-              paymaster: props.selectedPersonId,
-              participantIds: props.selectedParticipants,
+              expensename: expenseName,
+              cost: parseFloat(personExpense) * 100,
+              eventId: eventId,
+              paymaster: selectedPersonId,
+              participantIds: selectedParticipants,
             }),
-          });
+          })
 
           const createExpenseResponseBody =
-            (await createPersonResponse.json()) as CreateExpenseResponseBody;
+            (await createPersonResponse.json()) as CreateExpenseResponseBody
 
           if ('errors' in createExpenseResponseBody) {
-            props.setErrors(createExpenseResponseBody.errors);
-            return;
+            setErrors(createExpenseResponseBody.errors)
+            return
           }
 
           const createdExpenses: ExpenseWithParticipants[] = [
-            ...props.expenseList,
+            ...expenseList,
             createExpenseResponseBody.expense,
-          ];
+          ]
 
-          props.setExpenseList(createdExpenses);
-          props.setExpenseName('');
-          props.setPersonExpense('0');
+          setExpenseList(createdExpenses)
+          setExpenseName('')
+          setPersonExpense('0')
           // Reset participants to all people for next expense
-          props.setSelectedParticipants(props.peopleList.map((p) => p.id));
+          setSelectedParticipants(peopleList.map((p) => p.id))
 
-          props.setErrors([]);
-          props.setExpenseError('');
+          setErrors([])
+          setExpenseError('')
         }}
       >
         <div css={expenseContainerStyles}>
@@ -139,16 +157,16 @@ export default function ExpenseList(props: Props) {
           <select
             data-test-id="select-person"
             id="person-list"
-            onChange={props.handleSelectPerson}
+            onChange={handleSelectPerson}
             required
             css={selectStyles}
           >
             <option key="template" value={0}>
               Select Person
             </option>
-            {props.peopleList.map((person) => {
+            {peopleList.map((person) => {
               return (
-                person.event_id === props.eventId && (
+                person.event_id === eventId && (
                   <option
                     key={`person-${person.name}-${person.id}`}
                     value={person.id}
@@ -156,47 +174,47 @@ export default function ExpenseList(props: Props) {
                     {person.name}
                   </option>
                 )
-              );
+              )
             })}
           </select>
 
           <label>Who splits this expense?</label>
           <div css={participantCheckboxContainerStyles}>
-            {props.peopleList.map((person) => {
+            {peopleList.map((person) => {
               return (
-                person.event_id === props.eventId && (
+                person.event_id === eventId && (
                   <label
                     key={`participant-${person.id}`}
                     css={checkboxLabelStyles}
                   >
                     <input
                       type="checkbox"
-                      checked={props.selectedParticipants.includes(person.id)}
-                      disabled={person.id === props.selectedPersonId}
+                      checked={selectedParticipants.includes(person.id)}
+                      disabled={person.id === selectedPersonId}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          props.setSelectedParticipants([
-                            ...props.selectedParticipants,
+                          setSelectedParticipants([
+                            ...selectedParticipants,
                             person.id,
-                          ]);
+                          ])
                         } else {
                           // Don't allow unchecking the paymaster
-                          if (person.id === props.selectedPersonId) {
-                            return;
+                          if (person.id === selectedPersonId) {
+                            return
                           }
-                          props.setSelectedParticipants(
-                            props.selectedParticipants.filter(
+                          setSelectedParticipants(
+                            selectedParticipants.filter(
                               (id) => id !== person.id,
                             ),
-                          );
+                          )
                         }
                       }}
                     />
                     {person.name}
-                    {person.id === props.selectedPersonId && ' (paying)'}
+                    {person.id === selectedPersonId && ' (paying)'}
                   </label>
                 )
-              );
+              )
             })}
           </div>
 
@@ -205,12 +223,12 @@ export default function ExpenseList(props: Props) {
             data-test-id="expense-value"
             css={inputExpenseStyles}
             id="expense"
-            value={props.personExpense}
+            value={personExpense}
             placeholder="0 €"
             required
             onChange={(e) => {
-              e.currentTarget.value = e.currentTarget.value.replace(/,/g, '.');
-              props.setPersonExpense(e.currentTarget.value);
+              e.currentTarget.value = e.currentTarget.value.replace(/,/g, '.')
+              setPersonExpense(e.currentTarget.value)
             }}
           />
 
@@ -219,15 +237,15 @@ export default function ExpenseList(props: Props) {
             css={inputExpenseStyles}
             data-test-id="expense-name"
             id="expense-name"
-            value={props.expenseName}
+            value={expenseName}
             placeholder="Name of the Expense"
             required
             onChange={(e) => {
-              props.setExpenseName(e.currentTarget.value);
+              setExpenseName(e.currentTarget.value)
             }}
           />
-          {props.expenseError && (
-            <span css={spanErrorStyles}> {props.expenseError}</span>
+          {expenseError && (
+            <span css={spanErrorStyles}> {expenseError}</span>
           )}
           <input
             data-test-id="complete-expense"
@@ -238,14 +256,14 @@ export default function ExpenseList(props: Props) {
           />
         </div>
       </form>
-      {props.expenseList.map((expense) => {
-        const payerName = props.peopleList.find(
+      {expenseList.map((expense) => {
+        const payerName = peopleList.find(
           (p) => p.id === expense.paymaster,
-        )?.name;
-        const participantNames = props.peopleList
+        )?.name
+        const participantNames = peopleList
           .filter((p) => expense.participantIds?.includes(p.id))
           .map((p) => p.name)
-          .join(', ');
+          .join(', ')
 
         return (
           <div key={`expense-${expense.id}}`}>
@@ -266,15 +284,17 @@ export default function ExpenseList(props: Props) {
                 css={removeButtonStyles}
                 aria-label={`Delete Button for Expense: ${expense.expensename}`}
                 onClick={() => {
-                  props.deleteExpense(expense.id);
+                  deleteExpense(expense.id)
                 }}
               >
                 X
               </button>
             </div>
           </div>
-        );
+        )
       })}
     </>
-  );
+  )
 }
+
+export default ExpenseList

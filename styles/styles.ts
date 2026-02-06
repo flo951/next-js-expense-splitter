@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { css } from '@emotion/react'
 
 export const formContainerStyles = css`
   display: flex;
@@ -9,7 +9,7 @@ export const formContainerStyles = css`
     text-align: center;
     font-weight: 400;
   }
-`;
+`
 
 export const formStyles = css`
   padding: 24px;
@@ -22,4 +22,4 @@ export const formStyles = css`
   h4 {
     font-size: 20px;
   }
-`;
+`

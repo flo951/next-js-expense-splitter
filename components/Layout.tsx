@@ -1,11 +1,12 @@
-import Head from 'next/head';
-import { User } from '../util/database';
-import Header from './Header';
-type Props = {
-  children: object;
+import type { ReactNode } from 'react'
+import Head from 'next/head'
+import type { User } from '../util/database'
+import Header from './Header'
+type LayoutProps = {
+  children: ReactNode;
   userObject?: User;
 };
-export default function Layout(props: Props) {
+const Layout = ({ children, userObject }: LayoutProps) => {
   return (
     <>
       <Head>
@@ -14,9 +15,11 @@ export default function Layout(props: Props) {
         <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="images/icon-192.png" type="image/svg+xml" />
       </Head>
-      <Header userObject={props.userObject} />
+      <Header userObject={userObject} />
 
-      <main>{props.children}</main>
+      <main>{children}</main>
     </>
-  );
+  )
 }
+
+export default Layout

@@ -1,28 +1,28 @@
-import { css } from '@emotion/react';
-import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import BarChart from '../../components/BarChart';
-import ExpenseList from '../../components/ExpenseList';
-import PeopleList from '../../components/PeopleList';
+import { css } from '@emotion/react'
+import type { GetServerSidePropsContext } from 'next'
+import Head from 'next/head'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import BarChart from '../../components/BarChart'
+import ExpenseList from '../../components/ExpenseList'
+import PeopleList from '../../components/PeopleList'
 
+import type {
+  Event} from '../../util/database'
 import {
-  Event,
-  Expense,
   getAllExpensesWhereIdMatches,
   getAllPeopleWhereEventIdMatches,
   getProfileImageEvent,
   getSingleEvent,
   getUserByValidSessionToken,
-  Person,
-} from '../../util/database';
-import { CreateEventResponseBody, DeleteEventResponseBody } from '../api/event';
-import { DeleteExpenseResponseBody } from '../api/expense';
-import { Errors, spanStyles } from '../createevent';
-import { errorStyles } from '../login';
-import { expenses, people } from '@prisma/client';
+} from '../../util/database'
+import type { CreateEventResponseBody, DeleteEventResponseBody } from '../api/event'
+import type { DeleteExpenseResponseBody } from '../api/expense'
+import type { Errors} from '../createevent'
+import { spanStyles } from '../createevent'
+import { errorStyles } from '../login'
+import type { expenses, people } from '@prisma/client'
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
@@ -45,7 +45,7 @@ const mainStyles = css`
     margin: 0 auto;
     gap: 12px;
   }
-`;
+`
 export const removeButtonStyles = css`
   color: white;
   border: none;
@@ -56,7 +56,7 @@ export const removeButtonStyles = css`
   border-radius: 50%;
   max-height: 25px;
   cursor: pointer;
-`;
+`
 const eventNameButtonRowStyles = css`
   display: flex;
   justify-content: center;
@@ -65,18 +65,18 @@ const eventNameButtonRowStyles = css`
     font-size: 18px;
     font-weight: 400;
   }
-`;
+`
 export const selectStyles = css`
   padding: 8px;
 
   font-size: 20px;
-`;
+`
 export const inputExpenseStyles = css`
   padding: 8px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 20px;
-`;
+`
 export const expenseContainerStyles = css`
   display: flex;
   flex-direction: column;
@@ -87,11 +87,11 @@ export const expenseContainerStyles = css`
     text-align: center;
     font-weight: 400;
   }
-`;
+`
 export const spanErrorStyles = css`
   color: rgb(206, 25, 13);
   font-size: 20px;
-`;
+`
 const expenseBigContainerStyles = css`
   display: flex;
   flex-direction: column;
@@ -103,7 +103,7 @@ const expenseBigContainerStyles = css`
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   width: 324px;
   height: max-content;
-`;
+`
 export const inputExpenseSubmitStyles = css`
   background-image: linear-gradient(to right top, #043159, #10528e, #2a689f);
   margin-top: 12px;
@@ -116,21 +116,21 @@ export const inputExpenseSubmitStyles = css`
     border: 2px solid #dc8409;
     transition: 0.3s ease-out;
   }
-`;
+`
 export const expenseDetailStyles = css`
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 18px;
-`;
+`
 
 export const redColorCostsStyles = css`
   color: rgb(206, 25, 13);
-`;
+`
 export const eventProfilePicStyles = css`
   border: 2px solid black;
   border-radius: 50%;
-`;
+`
 const borderPeopleListStyles = css`
   border: 2px solid black;
   border-radius: 8px;
@@ -141,7 +141,7 @@ const borderPeopleListStyles = css`
   padding: 12px;
   width: 324px;
   height: fit-content;
-`;
+`
 const buttonFileUploadStyles = css`
   color: white;
   background-image: linear-gradient(to right top, #043159, #10528e, #2a689f);
@@ -154,7 +154,7 @@ const buttonFileUploadStyles = css`
     border: 2px solid #dc8409;
     transition: 0.3s ease-out;
   }
-`;
+`
 const inputFileUploadStyles = css`
   margin: 2px;
   border-radius: 8px;
@@ -164,11 +164,11 @@ const inputFileUploadStyles = css`
   margin-right: 6px;
   background-image: linear-gradient(to right top, #043159, #10528e, #2a689f);
   color: white;
-`;
+`
 export const loadingFlexBox = css`
   display: flex;
   align-items: center;
-`;
+`
 export const loadingCircleStyles = css`
   border-radius: 50%;
   border-top: 2px solid #2a6592;
@@ -197,12 +197,12 @@ export const loadingCircleStyles = css`
       transform: rotate(360deg);
     }
   }
-`;
+`
 
 export type ImageUrl = {
   imageurl: string;
 };
-type Props = {
+type UserDetailProps = {
   user: { id: number; username: string };
   eventInDb: Event;
   errors: string;
@@ -213,50 +213,59 @@ type Props = {
   uploadPreset: string;
 };
 
-export default function UserDetail(props: Props) {
-  const [eventList, setEventList] = useState<Event[]>([props.eventInDb]);
-  const [peopleList, setPeopleList] = useState<people[]>(props.peopleInDb);
-  const [personExpense, setPersonExpense] = useState('');
-  const [expenseName, setExpenseName] = useState('');
-  const [selectedPersonId, setSelectedPersonId] = useState<number>(0);
+const UserDetail = ({
+  user,
+  eventInDb,
+  errors,
+  peopleInDb,
+  expensesInDb,
+  profileImageInDb,
+  cloudName,
+  uploadPreset,
+}: UserDetailProps) => {
+  const [eventList, setEventList] = useState<Event[]>([eventInDb])
+  const [peopleList, setPeopleList] = useState<people[]>(peopleInDb)
+  const [personExpense, setPersonExpense] = useState('')
+  const [expenseName, setExpenseName] = useState('')
+  const [selectedPersonId, setSelectedPersonId] = useState<number>(0)
   const [selectedParticipants, setSelectedParticipants] = useState<number[]>(
-    props.peopleInDb.map((p) => p.id),
-  );
-  const [sumEventCosts, setSumEventCosts] = useState('0');
-  const [errors, setErrors] = useState<Errors | undefined>([]);
-  const [expenseError, setExpenseError] = useState('');
-  const [uploadError, setUploadError] = useState('');
+    peopleInDb.map((p) => p.id),
+  )
+  const [sumEventCosts, setSumEventCosts] = useState('0')
+  const [formErrors, setFormErrors] = useState<Errors | undefined>([])
+  const [expenseError, setExpenseError] = useState('')
+  const [uploadError, setUploadError] = useState('')
   const [expenseList, setExpenseList] = useState<ExpenseWithParticipants[]>(
-    props.expensesInDb,
-  );
-  const [uploadImage, setUploadImage] = useState<FileList>();
-  const [imageUrl, setImageUrl] = useState(props.profileImageInDb.imageurl);
-  const [isLoading, setIsLoading] = useState<Boolean>();
+    expensesInDb,
+  )
+  const [uploadImage, setUploadImage] = useState<FileList>()
+  const [imageUrl, setImageUrl] = useState(profileImageInDb.imageurl)
+  const [isLoading, setIsLoading] = useState<boolean>()
   const [editButtonImageUpload, setEditButtonImageUpload] =
-    useState<Boolean>(false);
-  const router = useRouter();
+    useState<boolean>(false)
+  const router = useRouter()
 
   useEffect(() => {
-    function calculateTotalSumPerEvent() {
-      if (typeof props.eventInDb === 'undefined') {
-        return;
+    const calculateTotalSumPerEvent = () => {
+      if (typeof eventInDb === 'undefined') {
+        return
       }
 
       const cost: number[] = expenseList.map((expense) => {
-        return expense.cost! / 100;
-      });
+        return expense.cost! / 100
+      })
 
-      const sum = cost.reduce((partialSum, a) => partialSum + a, 0);
-      setSumEventCosts(sum.toFixed(2));
+      const sum = cost.reduce((partialSum, a) => partialSum + a, 0)
+      setSumEventCosts(sum.toFixed(2))
     }
-    calculateTotalSumPerEvent();
-  }, [expenseList, props.eventInDb]);
+    calculateTotalSumPerEvent()
+  }, [expenseList, eventInDb])
 
   // Reset selectedParticipants when peopleList changes (new person added)
   useEffect(() => {
-    setSelectedParticipants(peopleList.map((p) => p.id));
-  }, [peopleList]);
-  if (props.errors) {
+    setSelectedParticipants(peopleList.map((p) => p.id))
+  }, [peopleList])
+  if (errors) {
     return (
       <>
         <Head>
@@ -266,12 +275,12 @@ export default function UserDetail(props: Props) {
             content="You are not allowed to see this page"
           />
         </Head>
-        <h1>{props.errors}</h1>
+        <h1>{errors}</h1>
       </>
-    );
+    )
   }
 
-  async function deleteExpense(id: number) {
+  const deleteExpense = async (id: number) => {
     const deleteResponse = await fetch(`/api/expense`, {
       method: 'DELETE',
       headers: {
@@ -280,34 +289,34 @@ export default function UserDetail(props: Props) {
       body: JSON.stringify({
         expenseId: id,
       }),
-    });
+    })
     const deleteExpenseResponseBody =
-      (await deleteResponse.json()) as DeleteExpenseResponseBody;
+      (await deleteResponse.json()) as DeleteExpenseResponseBody
     if ('errors' in deleteExpenseResponseBody) {
-      setErrors(deleteExpenseResponseBody.errors);
-      return;
+      setFormErrors(deleteExpenseResponseBody.errors)
+      return
     }
 
     if ('expense' in deleteExpenseResponseBody) {
       const newExpenseList = expenseList.filter((expense) => {
-        return deleteExpenseResponseBody.expense.id !== expense.id;
-      });
-      setExpenseList(newExpenseList);
-      return;
+        return deleteExpenseResponseBody.expense.id !== expense.id
+      })
+      setExpenseList(newExpenseList)
+      return
     }
   }
   // select a created person in a dropdown as a template for adding expenses
-  function handleSelectPerson(event: React.ChangeEvent<HTMLSelectElement>) {
-    const personId = parseInt(event.target.value);
-    setSelectedPersonId(personId);
+  const handleSelectPerson = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const personId = parseInt(event.target.value)
+    setSelectedPersonId(personId)
     // Ensure paymaster is in selected participants
     if (!selectedParticipants.includes(personId) && personId !== 0) {
-      setSelectedParticipants([...selectedParticipants, personId]);
+      setSelectedParticipants([...selectedParticipants, personId])
     }
   }
 
   // function to delete created events
-  async function deleteEvent(id: number) {
+  const deleteEvent = async (id: number) => {
     const deleteResponse = await fetch(`/api/event`, {
       method: 'DELETE',
       headers: {
@@ -315,64 +324,63 @@ export default function UserDetail(props: Props) {
       },
       body: JSON.stringify({
         eventId: id,
-        user: props.user,
+        user: user,
       }),
-    });
+    })
     const deleteEventResponseBody =
-      (await deleteResponse.json()) as DeleteEventResponseBody;
-    console.log(deleteEventResponseBody);
+      (await deleteResponse.json()) as DeleteEventResponseBody
     if ('errors' in deleteEventResponseBody) {
-      setErrors(deleteEventResponseBody.errors);
-      return;
+      setFormErrors(deleteEventResponseBody.errors)
+      return
     }
 
     const newEventList = eventList.filter((event) => {
-      return deleteEventResponseBody.event.id !== event.id;
-    });
+      return deleteEventResponseBody.event.id !== event.id
+    })
 
-    setEventList(newEventList);
-    await router.push(`/createevent`).catch((err) => console.log(err));
+    setEventList(newEventList)
+    await router.push(`/createevent`).catch((err) => console.error(err))
   }
 
   // function to upload event images
-  async function handleUploadImage(eventId: number) {
+  const handleUploadImage = async (eventId: number) => {
     if (!uploadImage) {
-      setUploadError('No Image selected');
-      return;
+      setUploadError('No Image selected')
+      return
     }
-    setUploadError('');
+    setUploadError('')
 
-    setIsLoading(true);
-    const formData = new FormData();
-    formData.append('file', uploadImage[0]);
-    formData.append('upload_preset', props.uploadPreset);
+    setIsLoading(true)
+    const formData = new FormData()
+    formData.append('file', uploadImage[0])
+    formData.append('upload_preset', uploadPreset)
 
     const uploadResponse = await fetch(
-      `https://api.cloudinary.com/v1_1/${props.cloudName}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       {
         method: 'POST',
         body: formData,
       },
-    );
+    )
     type CreateImageUploadResponseBody = {
       url: string;
       errors: { message: string }[];
     };
 
     const uploadImageEventResponseBody =
-      (await uploadResponse.json()) as CreateImageUploadResponseBody;
+      (await uploadResponse.json()) as CreateImageUploadResponseBody
 
-    const uploadUrl = uploadImageEventResponseBody.url;
+    const uploadUrl = uploadImageEventResponseBody.url
     if (typeof uploadUrl === 'undefined') {
-      setUploadError('Something went wrong, please try again');
-      setIsLoading(false);
-      return;
+      setUploadError('Something went wrong, please try again')
+      setIsLoading(false)
+      return
     }
-    setImageUrl(uploadUrl);
+    setImageUrl(uploadUrl)
 
     if ('errors' in uploadImageEventResponseBody) {
-      setErrors(uploadImageEventResponseBody.errors);
-      return;
+      setFormErrors(uploadImageEventResponseBody.errors)
+      return
     }
 
     const createEventResponse = await fetch('/api/event', {
@@ -384,24 +392,24 @@ export default function UserDetail(props: Props) {
         uploadUrl: uploadUrl,
         eventId: eventId,
       }),
-    });
+    })
 
     const createEventResponseBody =
-      (await createEventResponse.json()) as CreateEventResponseBody;
+      (await createEventResponse.json()) as CreateEventResponseBody
 
     if ('errors' in createEventResponseBody) {
-      setErrors(createEventResponseBody.errors);
-      return;
+      setFormErrors(createEventResponseBody.errors)
+      return
     }
 
-    setIsLoading(false);
-    setEditButtonImageUpload(false);
+    setIsLoading(false)
+    setEditButtonImageUpload(false)
   }
 
   return (
     <>
       <Head>
-        <title>Event {props.eventInDb.eventname}</title>
+        <title>Event {eventInDb.eventname}</title>
 
         <meta
           name="description"
@@ -423,7 +431,7 @@ export default function UserDetail(props: Props) {
                   <h3>Event: {event.eventname}</h3>
                   <button
                     onClick={() => {
-                      deleteEvent(event.id).catch(() => {});
+                      deleteEvent(event.id).catch(() => {})
                     }}
                     css={removeButtonStyles}
                     data-test-id="delete-event"
@@ -449,15 +457,17 @@ export default function UserDetail(props: Props) {
                       css={inputFileUploadStyles}
                       type="file"
                       onChange={(e) => {
-                        e.currentTarget.files === null
-                          ? setUploadImage(undefined)
-                          : setUploadImage(e.currentTarget.files);
+                        if (e.currentTarget.files === null) {
+                          setUploadImage(undefined)
+                        } else {
+                          setUploadImage(e.currentTarget.files)
+                        }
                       }}
                     />
                     <button
                       css={buttonFileUploadStyles}
                       onClick={() => {
-                        handleUploadImage(event.id).catch(() => {});
+                        handleUploadImage(event.id).catch(() => {})
                       }}
                     >
                       Upload
@@ -476,7 +486,7 @@ export default function UserDetail(props: Props) {
                   <button
                     css={buttonFileUploadStyles}
                     onClick={() => {
-                      setEditButtonImageUpload(true);
+                      setEditButtonImageUpload(true)
                     }}
                   >
                     Edit event picture
@@ -494,20 +504,20 @@ export default function UserDetail(props: Props) {
                 <PeopleList
                   peopleList={peopleList}
                   setPeopleList={setPeopleList}
-                  user={props.user}
-                  setErrors={setErrors}
+                  user={user}
+                  setErrors={setFormErrors}
                   expenseList={expenseList}
                   setExpenseList={setExpenseList}
-                  eventId={props.eventInDb.id}
+                  eventId={eventInDb.id}
                 />
-                {errors && (
+                {formErrors && (
                   <div css={errorStyles}>
-                    {errors.map((error) => {
+                    {formErrors.map((error) => {
                       return (
                         <div key={`error-${error.message}`}>
                           {error.message}
                         </div>
-                      );
+                      )
                     })}
                   </div>
                 )}
@@ -526,9 +536,9 @@ export default function UserDetail(props: Props) {
                   setExpenseName={setExpenseName}
                   expenseList={expenseList}
                   setExpenseList={setExpenseList}
-                  setErrors={setErrors}
+                  setErrors={setFormErrors}
                   peopleList={peopleList}
-                  eventId={props.eventInDb.id}
+                  eventId={eventInDb.id}
                   deleteExpense={deleteExpense}
                   handleSelectPerson={handleSelectPerson}
                 />
@@ -537,20 +547,23 @@ export default function UserDetail(props: Props) {
                 <span css={spanStyles}> Total: {sumEventCosts} €</span>
               </div>
 
-              <BarChart people={peopleList} expenses={expenseList} />
+              <BarChart peopleList={peopleList} expenseList={expenseList} />
             </div>
-          );
+          )
         })}
       </main>
     </>
-  );
+  )
 }
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const eventId = context.query.eventId as string;
 
-  const token = context.req.cookies.sessionToken;
+export default UserDetail
 
-  const user = await getUserByValidSessionToken(token);
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const eventId = context.query.eventId as string
+
+  const token = context.req.cookies.sessionToken
+
+  const user = await getUserByValidSessionToken(token)
 
   if (!user) {
     return {
@@ -558,18 +571,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         destination: `/login?returnTo=/users/${eventId}`,
         permanent: false,
       },
-    };
+    }
   }
-  const profileImageInDb = await getProfileImageEvent(parseInt(eventId));
+  const profileImageInDb = await getProfileImageEvent(parseInt(eventId))
 
-  const eventInDb = await getSingleEvent(parseInt(eventId));
+  const eventInDb = await getSingleEvent(parseInt(eventId))
 
   if (typeof eventInDb === 'undefined') {
     return {
       props: {
         errors: 'This event doesnt exist',
       },
-    };
+    }
   }
 
   if (user.id !== eventInDb?.user_id) {
@@ -577,29 +590,28 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       props: {
         errors: 'You are not allowed to see this page',
       },
-    };
+    }
   }
 
-  const peopleInDb = await getAllPeopleWhereEventIdMatches(parseInt(eventId));
-  console.log('people', peopleInDb);
+  const peopleInDb = await getAllPeopleWhereEventIdMatches(parseInt(eventId))
 
-  const expensesInDb = await getAllExpensesWhereIdMatches(parseInt(eventId));
+  const expensesInDb = await getAllExpensesWhereIdMatches(parseInt(eventId))
 
-  const cloudName = process.env.CLOUD_NAME;
+  const cloudName = process.env.CLOUD_NAME
   if (typeof cloudName === 'undefined') {
     return {
       props: {
         errors: 'cloudName is undefined',
       },
-    };
+    }
   }
-  const uploadPreset = process.env.UPLOAD_PRESET;
+  const uploadPreset = process.env.UPLOAD_PRESET
   if (typeof uploadPreset === 'undefined') {
     return {
       props: {
         errors: 'uploadPreset is undefined',
       },
-    };
+    }
   }
 
   return {
@@ -612,5 +624,5 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       cloudName: cloudName,
       uploadPreset: uploadPreset,
     },
-  };
+  }
 }

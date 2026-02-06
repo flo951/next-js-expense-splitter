@@ -1,21 +1,22 @@
-import { useState } from 'react';
-import { DeletePersonResponseBody } from '../pages/api/person';
+import { useState } from 'react'
+import type { DeletePersonResponseBody } from '../pages/api/person'
+import type {
+  Errors} from '../pages/createevent'
 import {
   divPersonListStyles,
-  Errors,
   formStyles,
   inputSubmitStyles,
   nameInputStyles,
   personStyles,
   spanStyles,
-} from '../pages/createevent';
-import { removeButtonStyles } from '../pages/users/[eventId]';
-import { User } from '../util/database';
-import { expenses, people } from '@prisma/client';
+} from '../pages/createevent'
+import { removeButtonStyles } from '../pages/users/[eventId]'
+import type { User } from '../util/database'
+import type { expenses, people } from '@prisma/client'
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
-type Props = {
+type PeopleListProps = {
   user: User;
   setErrors: (errors: Errors) => void;
   expenseList: ExpenseWithParticipants[];
@@ -24,11 +25,19 @@ type Props = {
   setPeopleList: (people: people[]) => void;
   peopleList: people[];
 };
-export default function PeopleList(props: Props) {
-  const [personName, setPersonName] = useState('');
+const PeopleList = ({
+  user,
+  setErrors,
+  expenseList,
+  setExpenseList,
+  eventId,
+  setPeopleList,
+  peopleList,
+}: PeopleListProps) => {
+  const [personName, setPersonName] = useState('')
 
   // function to delete created people
-  async function deletePerson(id: number) {
+  const deletePerson = async (id: number) => {
     const deleteResponse = await fetch(`/api/person`, {
       method: 'DELETE',
       headers: {
@@ -36,44 +45,44 @@ export default function PeopleList(props: Props) {
       },
       body: JSON.stringify({
         personId: id,
-        user: props.user,
+        user: user,
       }),
-    });
+    })
     const deletePersonResponseBody =
-      (await deleteResponse.json()) as DeletePersonResponseBody;
+      (await deleteResponse.json()) as DeletePersonResponseBody
 
     if ('errors' in deletePersonResponseBody) {
-      props.setErrors(deletePersonResponseBody.errors);
-      return;
+      setErrors(deletePersonResponseBody.errors)
+      return
     }
     if ('person' in deletePersonResponseBody) {
-      const newPeopleList = props.peopleList.filter((person) => {
-        return deletePersonResponseBody.person.id !== person.id;
-      });
-      props.setPeopleList(newPeopleList);
+      const newPeopleList = peopleList.filter((person) => {
+        return deletePersonResponseBody.person.id !== person.id
+      })
+      setPeopleList(newPeopleList)
 
       // Filter out expenses where the deleted person is the paymaster
       // and remove the deleted person from participantIds of remaining expenses
-      const newExpenseList = props.expenseList
+      const newExpenseList = expenseList
         .filter((expense) => {
-          return deletePersonResponseBody.person.id !== expense.paymaster;
+          return deletePersonResponseBody.person.id !== expense.paymaster
         })
         .map((expense) => ({
           ...expense,
           participantIds: expense.participantIds.filter(
             (id) => id !== deletePersonResponseBody.person.id,
           ),
-        }));
-      props.setExpenseList(newExpenseList);
+        }))
+      setExpenseList(newExpenseList)
 
-      return;
+      return
     }
   }
   return (
     <>
       <form
         onSubmit={async (e) => {
-          e.preventDefault();
+          e.preventDefault()
 
           const createPersonResponse = await fetch('/api/person', {
             method: 'POST',
@@ -82,27 +91,27 @@ export default function PeopleList(props: Props) {
             },
             body: JSON.stringify({
               name: personName,
-              user: props.user,
-              eventId: props.eventId,
+              user: user,
+              eventId: eventId,
             }),
-          });
+          })
 
           const createPersonResponseBody =
-            (await createPersonResponse.json()) as DeletePersonResponseBody;
+            (await createPersonResponse.json()) as DeletePersonResponseBody
           if ('person' in createPersonResponseBody) {
             const createdPeople: people[] = [
-              ...props.peopleList,
+              ...peopleList,
               createPersonResponseBody.person,
-            ];
-            props.setPeopleList(createdPeople);
+            ]
+            setPeopleList(createdPeople)
 
-            setPersonName('');
-            return;
+            setPersonName('')
+            return
           }
 
           if ('errors' in createPersonResponseBody) {
-            props.setErrors(createPersonResponseBody.errors);
-            return;
+            setErrors(createPersonResponseBody.errors)
+            return
           }
         }}
         css={formStyles}
@@ -126,12 +135,12 @@ export default function PeopleList(props: Props) {
         />
       </form>
       <div css={divPersonListStyles}>
-        {props.peopleList.map((person: people) => {
+        {peopleList.map((person: people) => {
           return (
-            person.event_id === props.eventId && (
+            person.event_id === eventId && (
               <div
                 data-test-id={`person-width-id-${person.id}`}
-                key={`this is ${person.name} witdh ${person.id} from event ${props.eventId}`}
+                key={`this is ${person.name} witdh ${person.id} from event ${eventId}`}
               >
                 <div css={personStyles}>
                   <span
@@ -145,7 +154,7 @@ export default function PeopleList(props: Props) {
                     css={removeButtonStyles}
                     aria-label={`Delete Button for Person: ${person.name}`}
                     onClick={() => {
-                      deletePerson(person.id).catch(() => {});
+                      deletePerson(person.id).catch(() => {})
                     }}
                   >
                     X
@@ -153,9 +162,11 @@ export default function PeopleList(props: Props) {
                 </div>
               </div>
             )
-          );
+          )
         })}
       </div>
     </>
-  );
+  )
 }
+
+export default PeopleList

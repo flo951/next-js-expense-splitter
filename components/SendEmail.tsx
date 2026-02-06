@@ -1,39 +1,45 @@
-import { css } from '@emotion/react';
-import { useState } from 'react';
-import { inputSubmitStyles, spanStyles } from '../pages/createevent';
+import { css } from '@emotion/react'
+import { useState } from 'react'
+import { inputSubmitStyles, spanStyles } from '../pages/createevent'
 import {
   inputExpenseStyles,
   loadingCircleStyles,
   loadingFlexBox,
-} from '../pages/users/[eventId]';
-import { formStyles } from '../styles/styles';
-import { Event } from '../util/database';
-import { barChartStyles } from './BarChart';
+} from '../pages/users/[eventId]'
+import { formStyles } from '../styles/styles'
+import type { Event } from '../util/database'
+import { barChartStyles } from './BarChart'
 const emailFeedbackStyles = css`
   color: green;
-`;
-type Props = {
+`
+type SendEmailProps = {
   user: string;
   expenseList: string[];
   balanceMessages: string[];
   event: Event;
   participants: string[];
 };
-export default function SendEmail(props: Props) {
-  const [name, setName] = useState(props.user);
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [emailResponse, setEmailResponse] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const SendEmail = ({
+  user,
+  expenseList,
+  balanceMessages,
+  event,
+  participants,
+}: SendEmailProps) => {
+  const [name, setName] = useState(user)
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [emailResponse, setEmailResponse] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   return (
     <div css={barChartStyles}>
       <h3>Send the result to your friends</h3>
       <form
         css={formStyles}
         onSubmit={async (e) => {
-          e.preventDefault();
-          setEmailResponse('');
-          setIsLoading(true);
+          e.preventDefault()
+          setEmailResponse('')
+          setIsLoading(true)
           const createEmailResponse = await fetch('/api/email', {
             method: 'POST',
             headers: {
@@ -43,21 +49,21 @@ export default function SendEmail(props: Props) {
               name: name,
               email: email,
               message: message,
-              expenseList: props.expenseList,
-              result: props.balanceMessages,
-              event: props.event,
-              participants: props.participants,
+              expenseList: expenseList,
+              result: balanceMessages,
+              event: event,
+              participants: participants,
             }),
-          });
-          const createEmailResponseBody = await createEmailResponse.json();
-          setName('');
-          setEmail('');
-          setMessage('');
-          setIsLoading(false);
+          })
+          const createEmailResponseBody = await createEmailResponse.json()
+          setName('')
+          setEmail('')
+          setMessage('')
+          setIsLoading(false)
           setEmailResponse(
             `E-Mail sent successfully to ${createEmailResponseBody.mailData.accepted}`,
-          );
-          setTimeout(() => setEmailResponse(''), 5000);
+          )
+          setTimeout(() => setEmailResponse(''), 5000)
         }}
       >
         <label htmlFor="name">Your Name</label>
@@ -67,7 +73,7 @@ export default function SendEmail(props: Props) {
           name="name"
           required
           onChange={(e) => {
-            setName(e.target.value);
+            setName(e.target.value)
           }}
           placeholder="Name"
         />
@@ -80,7 +86,7 @@ export default function SendEmail(props: Props) {
           name="email"
           required
           onChange={(e) => {
-            setEmail(e.target.value);
+            setEmail(e.target.value)
           }}
           placeholder="E-Mail"
         />
@@ -92,7 +98,7 @@ export default function SendEmail(props: Props) {
           required
           name="message"
           onChange={(e) => {
-            setMessage(e.target.value);
+            setMessage(e.target.value)
           }}
           placeholder="Message"
         />
@@ -110,5 +116,7 @@ export default function SendEmail(props: Props) {
         <span css={emailFeedbackStyles}>{emailResponse}</span>
       </form>
     </div>
-  );
+  )
 }
+
+export default SendEmail

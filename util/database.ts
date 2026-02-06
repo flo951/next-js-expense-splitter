@@ -1,9 +1,16 @@
-import camelcaseKeys from 'camelcase-keys';
-import { config } from 'dotenv-safe';
-import { PrismaClient } from '@prisma/client';
+import camelcaseKeys from 'camelcase-keys'
+import { config } from 'dotenv-safe'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@prisma/client'
 
-config();
-const prisma = new PrismaClient();
+config()
+
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_PRISMA_URL,
+})
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
 export type User = {
   id: number;
@@ -17,11 +24,11 @@ export async function getUserById(id: number) {
     where: {
       id: id,
     },
-  });
+  })
 }
 
 export async function getUserByValidSessionToken(token: string | undefined) {
-  if (!token) return undefined;
+  if (!token) return undefined
   // const user = await sql<User>`
   // SELECT users.id ,
   // users.username
@@ -46,7 +53,7 @@ export async function getUserByValidSessionToken(token: string | undefined) {
       id: true,
       username: true,
     },
-  });
+  })
 }
 
 export async function getUserByUsername(username: string) {
@@ -61,7 +68,7 @@ export async function getUserByUsername(username: string) {
     select: {
       id: true,
     },
-  });
+  })
 }
 export async function getUserWithPasswordHashByUsername(username: string) {
   //   const user = await client.sql<UserWithPasswordHash>`
@@ -77,7 +84,7 @@ export async function getUserWithPasswordHashByUsername(username: string) {
       username: true,
       password_hash: true,
     },
-  });
+  })
 }
 
 export async function createUser(username: string, passwordHash: string) {
@@ -97,15 +104,10 @@ export async function createUser(username: string, passwordHash: string) {
       username,
       password_hash: passwordHash,
     },
-  });
+  })
 }
-type Session = {
-  id: number;
-  token: string;
-  userId: number;
-};
 export async function getValidSessionByToken(token: string | undefined) {
-  if (!token) return undefined;
+  if (!token) return undefined
   //   const session = await client.sql<Session>`
   //     SELECT * FROM sessions WHERE token = ${token} AND expiry_timestamp > now()
   //  `;
@@ -116,13 +118,13 @@ export async function getValidSessionByToken(token: string | undefined) {
         gt: new Date(),
       },
     },
-  });
-  await deleteExpiredSessions();
-  return session;
+  })
+  await deleteExpiredSessions()
+  return session
 }
 
 export async function getValidSessionById(userId: number) {
-  if (!userId) return undefined;
+  if (!userId) return undefined
   //   const session = await client.sql<Session>`
   //     SELECT * FROM sessions WHERE user_id = ${userId} AND expiry_timestamp > now()
   //  `;
@@ -133,9 +135,9 @@ export async function getValidSessionById(userId: number) {
         gt: new Date(),
       },
     },
-  });
-  await deleteExpiredSessions();
-  return session;
+  })
+  await deleteExpiredSessions()
+  return session
 }
 
 export async function createSession(token: string, userId: number) {
@@ -152,13 +154,13 @@ export async function createSession(token: string, userId: number) {
       token,
       user_id: userId,
     },
-  });
-  await deleteExpiredSessions();
-  return session;
+  })
+  await deleteExpiredSessions()
+  return session
 }
 
 export async function deleteSessionByToken(token: string) {
-  if (!token) return undefined;
+  if (!token) return undefined
   // const session = await client.sql<Session>`
 
   // DELETE FROM
@@ -173,7 +175,7 @@ export async function deleteSessionByToken(token: string) {
     where: {
       token,
     },
-  });
+  })
 }
 
 export async function deleteExpiredSessions() {
@@ -193,7 +195,7 @@ export async function deleteExpiredSessions() {
         lt: new Date(),
       },
     },
-  });
+  })
 }
 
 export type Person = {
@@ -226,7 +228,7 @@ export async function createPerson(
       event_id: eventId,
       user_id: userId,
     },
-  });
+  })
 }
 
 export async function deletePersonById(id: number, userId: number) {
@@ -243,7 +245,7 @@ export async function deletePersonById(id: number, userId: number) {
       id,
       user_id: userId,
     },
-  });
+  })
 }
 
 export async function getAllPeopleWhereEventIdMatches(eventId: number) {
@@ -263,7 +265,7 @@ export async function getAllPeopleWhereEventIdMatches(eventId: number) {
       name: true,
       event_id: true,
     },
-  });
+  })
 }
 
 export type Event = {
@@ -289,7 +291,7 @@ export async function createEvent(eventName: string, userId: number) {
       eventname: eventName,
       user_id: userId,
     },
-  });
+  })
 }
 export async function insertImageUrlEvent(imageUrl: string, eventId: number) {
   // const event = await client.sql<Event>`
@@ -312,7 +314,7 @@ export async function insertImageUrlEvent(imageUrl: string, eventId: number) {
     data: {
       imageurl: imageUrl,
     },
-  });
+  })
 }
 
 export async function getProfileImageEvent(eventId: number) {
@@ -329,7 +331,7 @@ export async function getProfileImageEvent(eventId: number) {
     select: {
       imageurl: true,
     },
-  });
+  })
 }
 
 export async function deleteEventById(id: number, userId: number) {
@@ -346,10 +348,10 @@ export async function deleteEventById(id: number, userId: number) {
       id,
       user_id: userId,
     },
-  });
+  })
 }
 export async function getAllEventsWhereIdMatches(userId: number) {
-  if (!userId) return undefined;
+  if (!userId) return undefined
   // const events = await client.sql<Event>`
   // SELECT id, eventname, imageurl FROM events WHERE user_id = ${userId};
   // `;
@@ -363,7 +365,7 @@ export async function getAllEventsWhereIdMatches(userId: number) {
       eventname: true,
       imageurl: true,
     },
-  });
+  })
 }
 
 export async function getSingleEvent(eventId: number) {
@@ -377,7 +379,7 @@ export async function getSingleEvent(eventId: number) {
     where: {
       id: eventId,
     },
-  });
+  })
 }
 
 export type Expense = {
@@ -401,7 +403,7 @@ export async function createExpense(
   participantIds: number[],
 ) {
   // Ensure paymaster is always included in participants
-  const uniqueParticipants = [...new Set([paymaster, ...participantIds])];
+  const uniqueParticipants = [...new Set([paymaster, ...participantIds])]
 
   const expense = await prisma.expenses.create({
     data: {
@@ -422,12 +424,12 @@ export async function createExpense(
         },
       },
     },
-  });
+  })
 
   return {
     ...expense,
     participantIds: expense.expense_participants.map((ep) => ep.person_id),
-  };
+  }
 }
 
 export async function deleteExpenseById(expenseId: number) {
@@ -443,7 +445,7 @@ export async function deleteExpenseById(expenseId: number) {
     where: {
       id: expenseId,
     },
-  });
+  })
 }
 
 export async function getAllExpensesWhereIdMatches(eventId: number) {
@@ -458,10 +460,10 @@ export async function getAllExpensesWhereIdMatches(eventId: number) {
         },
       },
     },
-  });
+  })
 
   return expenses.map((expense) => ({
     ...camelcaseKeys(expense),
     participantIds: expense.expense_participants.map((ep) => ep.person_id),
-  }));
+  }))
 }

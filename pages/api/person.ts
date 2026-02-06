@@ -1,12 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next'
+import type {
+  User} from '../../util/database'
 import {
   createPerson,
   deletePersonById,
   getUserByValidSessionToken,
-  Person,
-  User,
-} from '../../util/database';
-import { people } from '@prisma/client';
+} from '../../util/database'
+import type { people } from '@prisma/client'
 
 export type CreatePersonResponseBody = {
   errors?: { message: string }[];
@@ -35,13 +35,13 @@ export default async function createPersonHandler(
   response: NextApiResponse<CreatePersonResponseBody>,
 ) {
   // Check if user is logged in and allowed to create or delete
-  const user = await getUserByValidSessionToken(request.cookies.sessionToken);
+  const user = await getUserByValidSessionToken(request.cookies.sessionToken)
 
   if (!user) {
     response.status(401).json({
       errors: [{ message: 'Unothorized' }],
-    });
-    return;
+    })
+    return
   }
   if (request.method === 'POST') {
     if (
@@ -53,8 +53,8 @@ export default async function createPersonHandler(
       // 400 bad request
       response.status(400).json({
         errors: [{ message: 'Name not provided' }],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
 
     // Create person in DB
@@ -63,10 +63,10 @@ export default async function createPersonHandler(
       request.body.name,
       request.body.eventId,
       request.body.user.id,
-    );
+    )
 
-    response.status(201).json({ person: person });
-    return;
+    response.status(201).json({ person: person })
+    return
   } else if (request.method === 'DELETE') {
     if (
       typeof request.body.personId !== 'number' ||
@@ -77,21 +77,21 @@ export default async function createPersonHandler(
       // 400 bad request
       response.status(400).json({
         errors: [{ message: 'id or name not provided' }],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
     // if the method is DELETE delete the person matching the id and user_id
     const deletedGuest = await deletePersonById(
       request.body.personId,
       request.body.user.id,
-    );
+    )
 
     if (!deletedGuest) {
-      response.status(404).json({ errors: [{ message: 'Name not provided' }] });
-      return;
+      response.status(404).json({ errors: [{ message: 'Name not provided' }] })
+      return
     }
-    response.status(201).json({ person: deletedGuest });
-    return;
+    response.status(201).json({ person: deletedGuest })
+    return
   }
-  response.status(405).json({ errors: [{ message: 'Method not supported' }] });
+  response.status(405).json({ errors: [{ message: 'Method not supported' }] })
 }

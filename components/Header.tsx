@@ -1,7 +1,8 @@
-import Link from 'next/link';
-import { css, Interpolation, Theme } from '@emotion/react';
-import { User } from '../util/database';
-import { AnchorHTMLAttributes } from 'react';
+import Link from 'next/link'
+import type { Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
+import type { User } from '../util/database'
+import type { AnchorHTMLAttributes } from 'react'
 
 const headerStyles = css`
   padding: 12px 12px;
@@ -62,7 +63,7 @@ const headerStyles = css`
     width: 324px;
     margin: 12px auto;
   }
-`;
+`
 
 const flexContainerStyles = css`
   display: flex;
@@ -70,39 +71,39 @@ const flexContainerStyles = css`
   h3 {
     font-weight: 400;
   }
-`;
+`
 const flexRowHeaderStyles = css`
   display: flex;
   justify-content: space-between;
-`;
+`
 
-type Props = {
+type HeaderProps = {
   userObject?: User;
 };
 
-function Anchor({
+const Anchor = ({
   children,
   ...restProps
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
   css?: Interpolation<Theme>;
-}) {
-  return <a {...restProps}>{children}</a>;
+}) => {
+  return <a {...restProps}>{children}</a>
 }
 
-export default function Header(props: Props) {
+const Header = ({ userObject }: HeaderProps) => {
   return (
     <header css={headerStyles}>
-      {props.userObject ? (
+      {userObject ? (
         <div css={flexRowHeaderStyles}>
           <div css={flexContainerStyles}>
-            <Link href="/users/overview">Overview</Link>
+            <Link href="/overview">Overview</Link>
             <Link href="/createevent">Create New Event</Link>
           </div>
           <div css={flexContainerStyles}>
             <h3>
               Hi
               <span data-test-id="logged-in-user">
-                {props.userObject.username}
+                {userObject.username}
               </span>
             </h3>
             <Anchor data-test-id="logout" href="/logout">
@@ -122,5 +123,7 @@ export default function Header(props: Props) {
         </div>
       )}
     </header>
-  );
+  )
 }
+
+export default Header

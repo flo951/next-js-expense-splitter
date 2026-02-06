@@ -1,35 +1,34 @@
-import { css } from '@emotion/react';
-import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import Link from 'next/link';
-import { useState } from 'react';
+import { css } from '@emotion/react'
+import type { GetServerSidePropsContext } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
+import { useState } from 'react'
 import {
-  Event,
   getAllEventsWhereIdMatches,
   getUserByValidSessionToken,
   getValidSessionByToken,
-} from '../util/database';
-import { CreateEventResponseBody, DeleteEventResponseBody } from './api/event';
-import { removeButtonStyles } from './users/[eventId]';
-import { events } from '@prisma/client';
+} from '../util/database'
+import type { CreateEventResponseBody, DeleteEventResponseBody } from './api/event'
+import { removeButtonStyles } from './users/[eventId]'
+import type { events } from '@prisma/client'
 
 const errorStyles = css`
   color: red;
   font-size: 20px;
-`;
+`
 export const divPersonListStyles = css`
   display: flex;
   flex-wrap: wrap;
   list-style: none;
   margin: 12px auto;
-`;
+`
 export const formStyles = css`
   display: flex;
   width: 300px;
   flex-direction: column;
   gap: 12px;
   margin: 12px;
-`;
+`
 
 const mainContainerDivStyles = css`
   display: flex;
@@ -39,7 +38,7 @@ const mainContainerDivStyles = css`
   border-radius: 8px;
   margin: 0 auto;
   width: 348px;
-`;
+`
 
 export const smallContainerDivStyles = css`
   display: flex;
@@ -49,11 +48,11 @@ export const smallContainerDivStyles = css`
   h1 {
     font-size: 20px;
   }
-`;
+`
 export const spanStyles = css`
   font-size: 20px;
   color: black;
-`;
+`
 export const inputSubmitStyles = css`
   background-image: linear-gradient(to right top, #043159, #10528e, #2a689f);
   padding: 4px;
@@ -65,7 +64,7 @@ export const inputSubmitStyles = css`
     border: 2px solid #dc8409;
     transition: 0.3s ease-out;
   }
-`;
+`
 export const nameInputStyles = css`
   font-size: 20px;
 
@@ -74,12 +73,12 @@ export const nameInputStyles = css`
   :focus {
     transition: 0.3s ease-out;
   }
-`;
+`
 
 export const personStyles = css`
   display: flex;
   padding: 4px;
-`;
+`
 export const eventListStyles = css`
   margin: 12px;
   display: flex;
@@ -91,9 +90,9 @@ export const eventListStyles = css`
     color: black;
     text-decoration: none;
   }
-`;
+`
 
-type Props = {
+type CreateEventProps = {
   eventsInDb: events[];
   user?: { id: number; username: string };
 
@@ -102,19 +101,19 @@ type Props = {
 
 export type Errors = { message: string }[];
 
-export default function CreateEvent(props: Props) {
-  const [eventName, setEventName] = useState('');
-  const [eventList, setEventList] = useState<events[]>(props.eventsInDb);
-  const [errors, setErrors] = useState<Errors | undefined>([]);
+const CreateEvent = ({ eventsInDb, user, errors }: CreateEventProps) => {
+  const [eventName, setEventName] = useState('')
+  const [eventList, setEventList] = useState<events[]>(eventsInDb)
+  const [formErrors, setFormErrors] = useState<Errors | undefined>([])
 
-  if ('errors' in props) {
+  if (errors) {
     return (
       <main>
-        <p>{props.errors}</p>
+        <p>{errors}</p>
       </main>
-    );
+    )
   }
-  async function deleteEvent(id: number) {
+  const deleteEvent = async (id: number) => {
     const deleteResponse = await fetch(`/api/event`, {
       method: 'DELETE',
       headers: {
@@ -122,22 +121,22 @@ export default function CreateEvent(props: Props) {
       },
       body: JSON.stringify({
         eventId: id,
-        user: props.user,
+        user: user,
       }),
-    });
+    })
     const deleteEventResponseBody =
-      (await deleteResponse.json()) as DeleteEventResponseBody;
+      (await deleteResponse.json()) as DeleteEventResponseBody
 
     if ('errors' in deleteEventResponseBody) {
-      setErrors(deleteEventResponseBody.errors);
-      return;
+      setFormErrors(deleteEventResponseBody.errors)
+      return
     }
 
     const newEventList = eventList.filter((event) => {
-      return deleteEventResponseBody.event.id !== event.id;
-    });
+      return deleteEventResponseBody.event.id !== event.id
+    })
 
-    setEventList(newEventList);
+    setEventList(newEventList)
   }
 
   return (
@@ -152,7 +151,7 @@ export default function CreateEvent(props: Props) {
 
           <form
             onSubmit={async (e) => {
-              e.preventDefault();
+              e.preventDefault()
               const createPersonResponse = await fetch('/api/event', {
                 method: 'POST',
                 headers: {
@@ -160,26 +159,25 @@ export default function CreateEvent(props: Props) {
                 },
                 body: JSON.stringify({
                   eventname: eventName,
-                  user: props.user,
+                  user: user,
                 }),
-              });
+              })
 
               const createEventResponseBody =
-                (await createPersonResponse.json()) as CreateEventResponseBody;
-              console.log(createEventResponseBody);
+                (await createPersonResponse.json()) as CreateEventResponseBody
               if ('event' in createEventResponseBody) {
                 const createdEvents: events[] = [
                   ...eventList,
                   createEventResponseBody.event,
-                ];
+                ]
 
-                setEventList(createdEvents);
-                setEventName('');
+                setEventList(createdEvents)
+                setEventName('')
               }
 
               if ('errors' in createEventResponseBody) {
-                setErrors(createEventResponseBody.errors);
-                return;
+                setFormErrors(createEventResponseBody.errors)
+                return
               }
             }}
             css={formStyles}
@@ -228,58 +226,60 @@ export default function CreateEvent(props: Props) {
                 <button
                   css={removeButtonStyles}
                   onClick={() => {
-                    deleteEvent(event.id).catch(() => {});
+                    deleteEvent(event.id).catch(() => {})
                   }}
                 >
                   X
                 </button>
               </div>
-            );
+            )
           })}
         </div>
 
         <div css={errorStyles}>
-          {errors !== undefined
-            ? errors.map((error) => {
+          {formErrors !== undefined
+            ? formErrors.map((error) => {
                 return (
                   <div key={`error-${error.message}`}>{error.message}</div>
-                );
+                )
               })
             : ''}
         </div>
       </main>
     </>
-  );
+  )
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const sessionToken = context.req.cookies.sessionToken;
-  const session = await getValidSessionByToken(sessionToken);
+export default CreateEvent
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const sessionToken = context.req.cookies.sessionToken
+  const session = await getValidSessionByToken(sessionToken)
   if (!session) {
     return {
       props: {
         errors: 'You are not allowed to see this page, please login',
       },
-    };
+    }
   }
-  const user = await getUserByValidSessionToken(sessionToken);
+  const user = await getUserByValidSessionToken(sessionToken)
 
   if (!user) {
     return {
       props: {
         errors: 'You are not logged in',
       },
-    };
+    }
   }
 
-  const eventsInDb = await getAllEventsWhereIdMatches(user.id);
+  const eventsInDb = await getAllEventsWhereIdMatches(user.id)
 
   if (!eventsInDb) {
     return {
       props: {
         errors: 'You are not logged in',
       },
-    };
+    }
   }
 
   return {
@@ -287,5 +287,5 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       eventsInDb: eventsInDb,
       user: user,
     },
-  };
+  }
 }

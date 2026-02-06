@@ -1,15 +1,16 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import bcrypt from 'bcrypt';
+import type { NextApiRequest, NextApiResponse } from 'next'
+import bcrypt from 'bcrypt'
+import type {
+  User} from '../../util/database'
 import {
   createSession,
   createUser,
-  getUserByUsername,
-  User,
-} from '../../util/database';
+  getUserByUsername
+} from '../../util/database'
 
-import { createSerializedRegisterSessionTokenCookie } from '../../util/cookies';
-import crypto from 'node:crypto';
-import { verifyCsrfToken } from '../../util/auth';
+import { createSerializedRegisterSessionTokenCookie } from '../../util/cookies'
+import crypto from 'node:crypto'
+import { verifyCsrfToken } from '../../util/auth'
 
 type RegisterRequestBody = {
   username: string;
@@ -41,18 +42,18 @@ export default async function registerHandler(
       // 400 bad request
       response.status(400).json({
         errors: [{ message: 'Username,Password or CSRF token not provided' }],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
 
     // Verify csrf token
-    const csrfTokenMatches = verifyCsrfToken(request.body.csrfToken);
+    const csrfTokenMatches = verifyCsrfToken(request.body.csrfToken)
 
     if (!csrfTokenMatches) {
       response.status(403).json({
         errors: [{ message: 'Invalid CSRF token' }],
-      });
-      return;
+      })
+      return
     }
     // If there is already a user matching the username,return error message
 
@@ -63,30 +64,30 @@ export default async function registerHandler(
             message: 'Username already taken',
           },
         ],
-      });
-      return; // Important: will prevent "Headers already sent" error, if you forget return it will go to the next return
+      })
+      return // Important: will prevent "Headers already sent" error, if you forget return it will go to the next return
     }
     // 12 is the number of salt rounds, 12^2n
-    const passwordHash = await bcrypt.hash(request.body.password, 12);
+    const passwordHash = await bcrypt.hash(request.body.password, 12)
 
     // Create user in DB
-    const user = await createUser(request.body.username, passwordHash);
+    const user = await createUser(request.body.username, passwordHash)
 
     // 1. Create a unique token
-    const token = crypto.randomBytes(64).toString('base64');
-    const session = await createSession(token, user.id);
+    const token = crypto.randomBytes(64).toString('base64')
+    const session = await createSession(token, user.id)
 
     // 2. Serialize the cookie
     const serializedCookie = await createSerializedRegisterSessionTokenCookie(
       session.token,
-    );
+    )
 
     // status code 201 means something was created
     response
       .status(201)
       .setHeader('Set-Cookie', serializedCookie)
-      .json({ user: user });
-    return;
+      .json({ user: user })
+    return
   }
-  response.status(405).json({ errors: [{ message: 'Method not supported' }] });
+  response.status(405).json({ errors: [{ message: 'Method not supported' }] })
 }
