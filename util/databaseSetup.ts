@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { sql } from '@vercel/postgres'
 
 export const createTables = async () => {
   try {
@@ -8,7 +8,7 @@ export const createTables = async () => {
        username varchar(30) NOT NULL UNIQUE,
       password_hash varchar(60) NOT NULL
        );
-  `;
+  `
     await sql`
   CREATE TABLE IF NOT EXISTS sessions (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -16,7 +16,7 @@ export const createTables = async () => {
    expiry_timestamp timestamp NOT NULL DEFAULT NOW() + INTERVAL '24 hours',
    user_id integer REFERENCES users (id) ON DELETE CASCADE
     );
-  `;
+  `
     await sql`
   CREATE TABLE IF NOT EXISTS events (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -24,7 +24,7 @@ export const createTables = async () => {
     imageurl varchar(120),
    user_id integer REFERENCES users (id) ON DELETE CASCADE
     );
-  `;
+  `
     await sql`
   CREATE TABLE IF NOT EXISTS people (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -33,7 +33,7 @@ export const createTables = async () => {
    user_id integer REFERENCES users (id) ON DELETE CASCADE
 
     );
-  `;
+  `
     await sql`
   CREATE TABLE IF NOT EXISTS expenses (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -43,8 +43,8 @@ export const createTables = async () => {
    paymaster integer REFERENCES people (id) ON DELETE CASCADE
 
     );
-  `;
+  `
   } catch (error) {
-    console.error('error creating tables', error);
+    console.error('error creating tables', error)
   }
-};
+}

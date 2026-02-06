@@ -1,5 +1,5 @@
-import { css } from '@emotion/react';
-import Head from 'next/head';
+import { css } from '@emotion/react'
+import Head from 'next/head'
 
 const mainStyles = css`
   display: flex;
@@ -10,19 +10,19 @@ const mainStyles = css`
   h1 {
     font-weight: 400;
   }
-`;
+`
 const spanStyles = css`
   margin: 1rem;
   font-size: 24px;
   text-align: center;
-`;
+`
 
 const videoStyles = css`
   height: 600px;
 
   border: 2px solid black;
   border-radius: 12px;
-`;
+`
 
 const videoContainerStyles = css`
   display: flex;
@@ -32,7 +32,7 @@ const videoContainerStyles = css`
     justify-content: center;
     align-items: center;
   }
-`;
+`
 
 const Home = () => {
   return (
@@ -61,7 +61,7 @@ const Home = () => {
         </span>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

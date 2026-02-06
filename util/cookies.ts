@@ -1,10 +1,10 @@
-import { serialize } from 'cookie';
+import { serialize } from 'cookie'
 
 export function createSerializedRegisterSessionTokenCookie(token: string) {
   // check if we are in production e.g. Heroku
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = process.env.NODE_ENV === 'production'
 
-  const maxAge = 60 * 60 * 24; // 24 hours
+  const maxAge = 60 * 60 * 24 // 24 hours
 
   return serialize('sessionToken', token, {
     maxAge: maxAge,
@@ -21,5 +21,5 @@ export function createSerializedRegisterSessionTokenCookie(token: string) {
     // in browsers
     // https://web.dev/samesite-cookies-explained/
     sameSite: 'lax',
-  });
+  })
 }

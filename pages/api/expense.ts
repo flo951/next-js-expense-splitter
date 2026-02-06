@@ -1,10 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next'
 import {
   createExpense,
   deleteExpenseById,
   getUserByValidSessionToken,
-} from '../../util/database';
-import { expenses } from '@prisma/client';
+} from '../../util/database'
+import type { expenses } from '@prisma/client'
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
@@ -32,17 +32,19 @@ type CreateEventNextApiRequest = Omit<NextApiRequest, 'body'> & {
 
 export default async function createEventHandler(
   request: CreateEventNextApiRequest,
-  response: NextApiResponse<CreateExpenseResponseBody | DeleteExpenseResponseBody>,
+  response: NextApiResponse<
+    CreateExpenseResponseBody | DeleteExpenseResponseBody
+  >,
 ) {
   // Create event in DB
   // Check if user is logged in and allowed to create or delete
-  const user = await getUserByValidSessionToken(request.cookies.sessionToken);
+  const user = await getUserByValidSessionToken(request.cookies.sessionToken)
 
   if (!user) {
     response.status(401).json({
       errors: [{ message: 'Unothorized' }],
-    });
-    return;
+    })
+    return
   }
 
   if (request.method === 'POST') {
@@ -64,8 +66,8 @@ export default async function createEventHandler(
               'Expense Name not provided, cost value invalid, paymaster id is 0, or no participants selected',
           },
         ],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
 
     const expense = await createExpense(
@@ -74,28 +76,28 @@ export default async function createEventHandler(
       request.body.eventId,
       request.body.paymaster,
       request.body.participantIds,
-    );
+    )
 
-    response.status(201).json({ expense: expense });
-    return;
+    response.status(201).json({ expense: expense })
+    return
   } else if (request.method === 'DELETE') {
     if (typeof request.body.expenseId !== 'number' || !request.body.expenseId) {
       // 400 bad request
       response.status(400).json({
         errors: [{ message: 'expense not provided' }],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
 
-    const deletedExpense = await deleteExpenseById(request.body.expenseId);
+    const deletedExpense = await deleteExpenseById(request.body.expenseId)
 
     if (!deletedExpense) {
-      response.status(404).json({ errors: [{ message: 'Name not provided' }] });
-      return;
+      response.status(404).json({ errors: [{ message: 'Name not provided' }] })
+      return
     }
-    response.status(201).json({ expense: deletedExpense });
-    return;
+    response.status(201).json({ expense: deletedExpense })
+    return
   }
 
-  response.status(405).json({ errors: [{ message: 'Method not supported' }] });
+  response.status(405).json({ errors: [{ message: 'Method not supported' }] })
 }

@@ -1,7 +1,8 @@
-import { css } from '@emotion/react';
-import { expenses, people } from '@prisma/client';
-import { CreateExpenseResponseBody } from '../pages/api/expense';
-import { Errors, formStyles, spanStyles } from '../pages/createevent';
+import { css } from '@emotion/react'
+import type { expenses, people } from '@prisma/client'
+import type { CreateExpenseResponseBody } from '../pages/api/expense'
+import type { Errors} from '../pages/createevent'
+import { formStyles, spanStyles } from '../pages/createevent'
 import {
   expenseContainerStyles,
   expenseDetailStyles,
@@ -10,7 +11,7 @@ import {
   removeButtonStyles,
   selectStyles,
   spanErrorStyles,
-} from '../pages/users/[eventId]';
+} from '../pages/users/[eventId]'
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
@@ -23,7 +24,7 @@ const participantCheckboxContainerStyles = css`
   border-radius: 4px;
   max-height: 150px;
   overflow-y: auto;
-`;
+`
 
 const checkboxLabelStyles = css`
   display: flex;
@@ -39,13 +40,13 @@ const checkboxLabelStyles = css`
   &:hover {
     background-color: #f0f0f0;
   }
-`;
+`
 
 const participantListStyles = css`
   font-size: 12px;
   color: #666;
   margin-top: 2px;
-`;
+`
 
 type ExpenseListProps = {
   personExpense: string;
@@ -88,29 +89,29 @@ const ExpenseList = ({
       <form
         css={formStyles}
         onSubmit={async (e) => {
-          e.preventDefault();
+          e.preventDefault()
 
           if (parseFloat(personExpense) <= 0) {
             setExpenseError(
               'Invalid input, please enter a positive value',
-            );
-            return;
+            )
+            return
           }
-          const testNumber: number = parseInt(personExpense);
+          const testNumber: number = parseInt(personExpense)
 
           if (!Number.isInteger(testNumber)) {
-            setExpenseError('Invalid input, please enter a number');
-            return;
+            setExpenseError('Invalid input, please enter a number')
+            return
           }
 
           if (selectedPersonId === 0) {
-            setExpenseError('Please select a person');
-            return;
+            setExpenseError('Please select a person')
+            return
           }
 
           if (selectedParticipants.length === 0) {
-            setExpenseError('Please select at least one participant');
-            return;
+            setExpenseError('Please select at least one participant')
+            return
           }
 
           const createPersonResponse = await fetch('/api/expense', {
@@ -125,29 +126,29 @@ const ExpenseList = ({
               paymaster: selectedPersonId,
               participantIds: selectedParticipants,
             }),
-          });
+          })
 
           const createExpenseResponseBody =
-            (await createPersonResponse.json()) as CreateExpenseResponseBody;
+            (await createPersonResponse.json()) as CreateExpenseResponseBody
 
           if ('errors' in createExpenseResponseBody) {
-            setErrors(createExpenseResponseBody.errors);
-            return;
+            setErrors(createExpenseResponseBody.errors)
+            return
           }
 
           const createdExpenses: ExpenseWithParticipants[] = [
             ...expenseList,
             createExpenseResponseBody.expense,
-          ];
+          ]
 
-          setExpenseList(createdExpenses);
-          setExpenseName('');
-          setPersonExpense('0');
+          setExpenseList(createdExpenses)
+          setExpenseName('')
+          setPersonExpense('0')
           // Reset participants to all people for next expense
-          setSelectedParticipants(peopleList.map((p) => p.id));
+          setSelectedParticipants(peopleList.map((p) => p.id))
 
-          setErrors([]);
-          setExpenseError('');
+          setErrors([])
+          setExpenseError('')
         }}
       >
         <div css={expenseContainerStyles}>
@@ -173,7 +174,7 @@ const ExpenseList = ({
                     {person.name}
                   </option>
                 )
-              );
+              )
             })}
           </select>
 
@@ -195,17 +196,17 @@ const ExpenseList = ({
                           setSelectedParticipants([
                             ...selectedParticipants,
                             person.id,
-                          ]);
+                          ])
                         } else {
                           // Don't allow unchecking the paymaster
                           if (person.id === selectedPersonId) {
-                            return;
+                            return
                           }
                           setSelectedParticipants(
                             selectedParticipants.filter(
                               (id) => id !== person.id,
                             ),
-                          );
+                          )
                         }
                       }}
                     />
@@ -213,7 +214,7 @@ const ExpenseList = ({
                     {person.id === selectedPersonId && ' (paying)'}
                   </label>
                 )
-              );
+              )
             })}
           </div>
 
@@ -226,8 +227,8 @@ const ExpenseList = ({
             placeholder="0 €"
             required
             onChange={(e) => {
-              e.currentTarget.value = e.currentTarget.value.replace(/,/g, '.');
-              setPersonExpense(e.currentTarget.value);
+              e.currentTarget.value = e.currentTarget.value.replace(/,/g, '.')
+              setPersonExpense(e.currentTarget.value)
             }}
           />
 
@@ -240,7 +241,7 @@ const ExpenseList = ({
             placeholder="Name of the Expense"
             required
             onChange={(e) => {
-              setExpenseName(e.currentTarget.value);
+              setExpenseName(e.currentTarget.value)
             }}
           />
           {expenseError && (
@@ -258,11 +259,11 @@ const ExpenseList = ({
       {expenseList.map((expense) => {
         const payerName = peopleList.find(
           (p) => p.id === expense.paymaster,
-        )?.name;
+        )?.name
         const participantNames = peopleList
           .filter((p) => expense.participantIds?.includes(p.id))
           .map((p) => p.name)
-          .join(', ');
+          .join(', ')
 
         return (
           <div key={`expense-${expense.id}}`}>
@@ -283,17 +284,17 @@ const ExpenseList = ({
                 css={removeButtonStyles}
                 aria-label={`Delete Button for Expense: ${expense.expensename}`}
                 onClick={() => {
-                  deleteExpense(expense.id);
+                  deleteExpense(expense.id)
                 }}
               >
                 X
               </button>
             </div>
           </div>
-        );
+        )
       })}
     </>
-  );
-};
+  )
+}
 
-export default ExpenseList;
+export default ExpenseList

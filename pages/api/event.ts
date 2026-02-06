@@ -1,13 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next'
+import type {
+  User} from '../../util/database'
 import {
   createEvent,
   deleteEventById,
-  Event,
   getUserByValidSessionToken,
-  insertImageUrlEvent,
-  User,
-} from '../../util/database';
-import { events } from '@prisma/client';
+  insertImageUrlEvent
+} from '../../util/database'
+import type { events } from '@prisma/client'
 
 export type CreateEventResponseBody =
   | { errors: { message: string }[] }
@@ -34,13 +34,13 @@ export default async function createEventHandler(
   response: NextApiResponse<CreateEventResponseBody>,
 ) {
   // Check if user is logged in and allowed to create or delete
-  const user = await getUserByValidSessionToken(request.cookies.sessionToken);
+  const user = await getUserByValidSessionToken(request.cookies.sessionToken)
 
   if (!user) {
     response.status(401).json({
       errors: [{ message: 'Unothorized' }],
-    });
-    return;
+    })
+    return
   }
   if (request.method === 'POST') {
     if (typeof request.body.uploadUrl !== 'undefined') {
@@ -48,17 +48,17 @@ export default async function createEventHandler(
         // 400 bad request
         response.status(400).json({
           errors: [{ message: 'Oops something went wrong' }],
-        });
-        return; // Important, prevents error for multiple requests
+        })
+        return // Important, prevents error for multiple requests
       }
 
       const imgUrl = await insertImageUrlEvent(
         request.body.uploadUrl,
         request.body.eventId,
-      );
+      )
 
-      response.status(201).json({ imageurl: imgUrl });
-      return;
+      response.status(201).json({ imageurl: imgUrl })
+      return
     }
     if (
       typeof request.body.eventname !== 'string' ||
@@ -71,8 +71,8 @@ export default async function createEventHandler(
       // 400 bad request
       response.status(400).json({
         errors: [{ message: 'Eventname not provided' }],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
 
     // Create event in DB
@@ -80,10 +80,10 @@ export default async function createEventHandler(
     const event = await createEvent(
       request.body.eventname,
       request.body.user.id,
-    );
+    )
 
-    response.status(201).json({ event: event });
-    return;
+    response.status(201).json({ event: event })
+    return
   } else if (request.method === 'DELETE') {
     if (
       typeof request.body.eventId !== 'number' ||
@@ -94,22 +94,22 @@ export default async function createEventHandler(
       // 400 bad request
       response.status(400).json({
         errors: [{ message: 'id or event name not provided' }],
-      });
-      return; // Important, prevents error for multiple requests
+      })
+      return // Important, prevents error for multiple requests
     }
     // if the method is DELETE delete the person matching the id and user_id
     const deletedEvent = await deleteEventById(
       request.body.eventId,
       request.body.user.id,
-    );
+    )
 
     if (!deletedEvent) {
-      response.status(404).json({ errors: [{ message: 'Name not provided' }] });
-      return;
+      response.status(404).json({ errors: [{ message: 'Name not provided' }] })
+      return
     }
-    response.status(201).json({ event: deletedEvent });
-    return;
+    response.status(201).json({ event: deletedEvent })
+    return
   }
 
-  response.status(405).json({ errors: [{ message: 'Method not supported' }] });
+  response.status(405).json({ errors: [{ message: 'Method not supported' }] })
 }

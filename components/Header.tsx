@@ -1,7 +1,8 @@
-import Link from 'next/link';
-import { css, Interpolation, Theme } from '@emotion/react';
-import { User } from '../util/database';
-import { AnchorHTMLAttributes } from 'react';
+import Link from 'next/link'
+import type { Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
+import type { User } from '../util/database'
+import type { AnchorHTMLAttributes } from 'react'
 
 const headerStyles = css`
   padding: 12px 12px;
@@ -62,7 +63,7 @@ const headerStyles = css`
     width: 324px;
     margin: 12px auto;
   }
-`;
+`
 
 const flexContainerStyles = css`
   display: flex;
@@ -70,11 +71,11 @@ const flexContainerStyles = css`
   h3 {
     font-weight: 400;
   }
-`;
+`
 const flexRowHeaderStyles = css`
   display: flex;
   justify-content: space-between;
-`;
+`
 
 type HeaderProps = {
   userObject?: User;
@@ -86,8 +87,8 @@ const Anchor = ({
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
   css?: Interpolation<Theme>;
 }) => {
-  return <a {...restProps}>{children}</a>;
-};
+  return <a {...restProps}>{children}</a>
+}
 
 const Header = ({ userObject }: HeaderProps) => {
   return (
@@ -122,7 +123,7 @@ const Header = ({ userObject }: HeaderProps) => {
         </div>
       )}
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

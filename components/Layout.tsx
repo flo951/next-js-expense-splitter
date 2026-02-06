@@ -1,8 +1,9 @@
-import Head from 'next/head';
-import { User } from '../util/database';
-import Header from './Header';
+import type { ReactNode } from 'react'
+import Head from 'next/head'
+import type { User } from '../util/database'
+import Header from './Header'
 type LayoutProps = {
-  children: object;
+  children: ReactNode;
   userObject?: User;
 };
 const Layout = ({ children, userObject }: LayoutProps) => {
@@ -18,7 +19,7 @@ const Layout = ({ children, userObject }: LayoutProps) => {
 
       <main>{children}</main>
     </>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

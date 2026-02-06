@@ -1,14 +1,15 @@
-import { GetServerSidePropsContext } from 'next';
+import type { GetServerSidePropsContext } from 'next'
+import type {
+  User} from '../../util/database'
 import {
   getUserByValidSessionToken,
-  getValidSessionByToken,
-  User,
-} from '../../util/database';
-import { css } from '@emotion/react';
+  getValidSessionByToken
+} from '../../util/database'
+import { css } from '@emotion/react'
 
 const mainStyles = css`
   margin: 1rem 1rem;
-`;
+`
 
 type RestrictedPageProps =
   | {
@@ -24,33 +25,33 @@ const RestrictedPage = (props: RestrictedPageProps) => {
       <main css={mainStyles}>
         <p>{props.error}</p>
       </main>
-    );
+    )
   }
 
   return (
     <main css={mainStyles}>
       <h1>you will only see this when you are logged in</h1>
     </main>
-  );
-};
+  )
+}
 
-export default RestrictedPage;
+export default RestrictedPage
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const sessionToken = context.req.cookies.sessionToken;
-  const session = await getValidSessionByToken(sessionToken);
+  const sessionToken = context.req.cookies.sessionToken
+  const session = await getValidSessionByToken(sessionToken)
 
   if (!session) {
     return {
       props: {
         error: 'You are not allowed to see this page',
       },
-    };
+    }
   }
-  const user = await getUserByValidSessionToken(sessionToken);
+  const user = await getUserByValidSessionToken(sessionToken)
   return {
     props: {
       user: user,
     },
-  };
+  }
 }

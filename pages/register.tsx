@@ -1,13 +1,13 @@
-import { css } from '@emotion/react';
-import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
-import { formContainerStyles, formStyles } from '../styles/styles';
-import { createCsrfToken } from '../util/auth';
-import { getValidSessionByToken } from '../util/database';
-import { RegisterResponseBody } from './api/register';
-import { inputSubmitStyles } from './login';
+import { css } from '@emotion/react'
+import type { GetServerSidePropsContext } from 'next'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { formContainerStyles, formStyles } from '../styles/styles'
+import { createCsrfToken } from '../util/auth'
+import { getValidSessionByToken } from '../util/database'
+import type { RegisterResponseBody } from './api/register'
+import { inputSubmitStyles } from './login'
 
 const nameInputStyles = css`
   padding: 8px 8px;
@@ -18,16 +18,16 @@ const nameInputStyles = css`
     outline-width: 2px;
     outline-style: solid;
   }
-`;
+`
 
 const spanLabelStyles = css`
   font-size: 20px;
   margin-bottom: 12px;
-`;
+`
 const errorStyles = css`
   color: red;
   font-size: 20px;
-`;
+`
 
 type Errors = { message: string }[];
 
@@ -37,10 +37,10 @@ type RegisterProps = {
 };
 
 const Register = ({ refreshUserProfile, csrfToken }: RegisterProps) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<Errors>([]);
-  const router = useRouter();
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<Errors>([])
+  const router = useRouter()
   return (
     <>
       <Head>
@@ -54,7 +54,7 @@ const Register = ({ refreshUserProfile, csrfToken }: RegisterProps) => {
         <form
           css={formStyles}
           onSubmit={async (e) => {
-            e.preventDefault();
+            e.preventDefault()
 
             const registerResponse = await fetch('/api/register', {
               method: 'POST',
@@ -66,20 +66,20 @@ const Register = ({ refreshUserProfile, csrfToken }: RegisterProps) => {
                 password: password,
                 csrfToken: csrfToken,
               }),
-            });
+            })
 
             const registerResponseBody =
-              (await registerResponse.json()) as RegisterResponseBody;
+              (await registerResponse.json()) as RegisterResponseBody
 
             if ('errors' in registerResponseBody) {
-              setErrors(registerResponseBody.errors);
-              return;
+              setErrors(registerResponseBody.errors)
+              return
             }
-            refreshUserProfile();
+            refreshUserProfile()
 
             await router
               .push('./createevent')
-              .catch((error) => console.log(error));
+              .catch((error) => console.error(error))
           }}
         >
           <label htmlFor="username">
@@ -116,32 +116,32 @@ const Register = ({ refreshUserProfile, csrfToken }: RegisterProps) => {
         </form>
         <div css={errorStyles}>
           {errors.map((error) => {
-            return <div key={`error-${error.message}`}>{error.message}</div>;
+            return <div key={`error-${error.message}`}>{error.message}</div>
           })}
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   // 1. check if there is a token and is valid from the cookie
-  const token = context.req.cookies.sessionToken;
+  const token = context.req.cookies.sessionToken
   // 2. if its valid redirect otherwise render the page
   if (token) {
-    const session = await getValidSessionByToken(token);
+    const session = await getValidSessionByToken(token)
     if (session) {
       return {
         redirect: {
           destination: '/',
           permanent: false,
         },
-      };
+      }
     }
   }
   return {
     props: { csrfToken: createCsrfToken() },
-  };
+  }
 }

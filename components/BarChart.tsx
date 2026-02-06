@@ -1,13 +1,14 @@
-import { Bar } from 'react-chartjs-2';
-import { ArcElement } from 'chart.js';
-import Chart from 'chart.js/auto';
-import { css } from '@emotion/react';
-import { spanStyles } from '../pages/createevent';
-import { splitPayments, Balances } from '../util/splitPayments';
+import { Bar } from 'react-chartjs-2'
+import { ArcElement } from 'chart.js'
+import Chart from 'chart.js/auto'
+import { css } from '@emotion/react'
+import { spanStyles } from '../pages/createevent'
+import type { Balances } from '../util/splitPayments'
+import { splitPayments } from '../util/splitPayments'
 
-import { expenses, people } from '@prisma/client';
+import type { expenses, people } from '@prisma/client'
 
-Chart.register(ArcElement);
+Chart.register(ArcElement)
 
 export const barChartStyles = css`
   width: 350px;
@@ -18,12 +19,12 @@ export const barChartStyles = css`
   border-radius: 8px;
   text-align: center;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-`;
+`
 const resultStyles = css`
   display: flex;
   flex-direction: column;
   gap: 6px;
-`;
+`
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
@@ -33,7 +34,7 @@ type BarChartProps = {
 };
 
 const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
-  const sendExpenseList: string[] = [];
+  const sendExpenseList: string[] = []
   expenseList.map((expense) => {
     return peopleList.map((person) => {
       return (
@@ -43,35 +44,35 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
             person.name
           }`,
         )
-      );
-    });
-  });
+      )
+    })
+  })
 
   if (expenseList.length === 0) {
     return (
       <div css={barChartStyles}>
         <h3>Add People and Expenses to see more</h3>
       </div>
-    );
+    )
   }
 
   const expensePerPerson = peopleList.map((person) => {
     // Calculate what this person paid
     const totalPaid = expenseList
       .filter((expense) => expense.paymaster === person.id)
-      .reduce((sum, expense) => sum + (expense.cost || 0) / 100, 0);
+      .reduce((sum, expense) => sum + (expense.cost || 0) / 100, 0)
 
     // Calculate what this person owes (their share of expenses they're part of)
     const totalOwed = expenseList
       .filter((expense) => expense.participantIds.includes(person.id))
       .reduce((sum, expense) => {
         const shareAmount =
-          (expense.cost || 0) / 100 / expense.participantIds.length;
-        return sum + shareAmount;
-      }, 0);
+          (expense.cost || 0) / 100 / expense.participantIds.length
+        return sum + shareAmount
+      }, 0)
 
     // Balance = what they paid - what they owe
-    const balance = Math.round((totalPaid - totalOwed) * 100) / 100;
+    const balance = Math.round((totalPaid - totalOwed) * 100) / 100
 
     return {
       personSum: {
@@ -79,24 +80,24 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
         personId: person.id,
         personName: person.name,
       },
-    };
-  });
+    }
+  })
 
   // Balances for each person
-  const balances = [];
+  const balances = []
 
   for (let i = 0; i < expensePerPerson.length; i++) {
-    balances.push(expensePerPerson[i].personSum);
+    balances.push(expensePerPerson[i].personSum)
   }
 
   // Convert balances to object format for settlement calculation
   const payments: Balances = balances.reduce(
     (obj, item) => Object.assign(obj, { [item.personName]: item.sum }),
     {},
-  );
-  const balanceMessages = splitPayments(payments);
+  )
+  const balanceMessages = splitPayments(payments)
 
-  const peopleNameArray = peopleList.map((person) => person.name);
+  const peopleNameArray = peopleList.map((person) => person.name)
 
   const data = {
     labels: peopleNameArray,
@@ -104,7 +105,7 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
       {
         label: 'Positive Balances in €',
         data: expensePerPerson.map((expense) => {
-          return expense.personSum.sum > 0 ? expense.personSum.sum : 0;
+          return expense.personSum.sum > 0 ? expense.personSum.sum : 0
         }),
         options: {
           plugins: {
@@ -121,7 +122,7 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
       {
         label: 'Negative Balances in €',
         data: expensePerPerson.map((expense) => {
-          return expense.personSum.sum < 0 ? expense.personSum.sum : 0;
+          return expense.personSum.sum < 0 ? expense.personSum.sum : 0
         }),
         options: {
           plugins: {
@@ -136,7 +137,7 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
         borderWidth: 1,
       },
     ],
-  };
+  }
   return (
     <div css={barChartStyles}>
       <Bar
@@ -169,7 +170,7 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
             <span key={`id ${Math.random()}`} css={spanStyles}>
               {item}
             </span>
-          );
+          )
         })}
 
         {expensePerPerson.map((item) => {
@@ -182,11 +183,11 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
                 {` ${item.personSum.personName} receives ${item.personSum.sum.toFixed(2)}€`}
               </span>
             )
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BarChart;
+export default BarChart

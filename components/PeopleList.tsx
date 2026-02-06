@@ -1,17 +1,18 @@
-import { useState } from 'react';
-import { DeletePersonResponseBody } from '../pages/api/person';
+import { useState } from 'react'
+import type { DeletePersonResponseBody } from '../pages/api/person'
+import type {
+  Errors} from '../pages/createevent'
 import {
   divPersonListStyles,
-  Errors,
   formStyles,
   inputSubmitStyles,
   nameInputStyles,
   personStyles,
   spanStyles,
-} from '../pages/createevent';
-import { removeButtonStyles } from '../pages/users/[eventId]';
-import { User } from '../util/database';
-import { expenses, people } from '@prisma/client';
+} from '../pages/createevent'
+import { removeButtonStyles } from '../pages/users/[eventId]'
+import type { User } from '../util/database'
+import type { expenses, people } from '@prisma/client'
 
 type ExpenseWithParticipants = expenses & { participantIds: number[] };
 
@@ -33,7 +34,7 @@ const PeopleList = ({
   setPeopleList,
   peopleList,
 }: PeopleListProps) => {
-  const [personName, setPersonName] = useState('');
+  const [personName, setPersonName] = useState('')
 
   // function to delete created people
   const deletePerson = async (id: number) => {
@@ -46,42 +47,42 @@ const PeopleList = ({
         personId: id,
         user: user,
       }),
-    });
+    })
     const deletePersonResponseBody =
-      (await deleteResponse.json()) as DeletePersonResponseBody;
+      (await deleteResponse.json()) as DeletePersonResponseBody
 
     if ('errors' in deletePersonResponseBody) {
-      setErrors(deletePersonResponseBody.errors);
-      return;
+      setErrors(deletePersonResponseBody.errors)
+      return
     }
     if ('person' in deletePersonResponseBody) {
       const newPeopleList = peopleList.filter((person) => {
-        return deletePersonResponseBody.person.id !== person.id;
-      });
-      setPeopleList(newPeopleList);
+        return deletePersonResponseBody.person.id !== person.id
+      })
+      setPeopleList(newPeopleList)
 
       // Filter out expenses where the deleted person is the paymaster
       // and remove the deleted person from participantIds of remaining expenses
       const newExpenseList = expenseList
         .filter((expense) => {
-          return deletePersonResponseBody.person.id !== expense.paymaster;
+          return deletePersonResponseBody.person.id !== expense.paymaster
         })
         .map((expense) => ({
           ...expense,
           participantIds: expense.participantIds.filter(
             (id) => id !== deletePersonResponseBody.person.id,
           ),
-        }));
-      setExpenseList(newExpenseList);
+        }))
+      setExpenseList(newExpenseList)
 
-      return;
+      return
     }
-  };
+  }
   return (
     <>
       <form
         onSubmit={async (e) => {
-          e.preventDefault();
+          e.preventDefault()
 
           const createPersonResponse = await fetch('/api/person', {
             method: 'POST',
@@ -93,24 +94,24 @@ const PeopleList = ({
               user: user,
               eventId: eventId,
             }),
-          });
+          })
 
           const createPersonResponseBody =
-            (await createPersonResponse.json()) as DeletePersonResponseBody;
+            (await createPersonResponse.json()) as DeletePersonResponseBody
           if ('person' in createPersonResponseBody) {
             const createdPeople: people[] = [
               ...peopleList,
               createPersonResponseBody.person,
-            ];
-            setPeopleList(createdPeople);
+            ]
+            setPeopleList(createdPeople)
 
-            setPersonName('');
-            return;
+            setPersonName('')
+            return
           }
 
           if ('errors' in createPersonResponseBody) {
-            setErrors(createPersonResponseBody.errors);
-            return;
+            setErrors(createPersonResponseBody.errors)
+            return
           }
         }}
         css={formStyles}
@@ -153,7 +154,7 @@ const PeopleList = ({
                     css={removeButtonStyles}
                     aria-label={`Delete Button for Person: ${person.name}`}
                     onClick={() => {
-                      deletePerson(person.id).catch(() => {});
+                      deletePerson(person.id).catch(() => {})
                     }}
                   >
                     X
@@ -161,11 +162,11 @@ const PeopleList = ({
                 </div>
               </div>
             )
-          );
+          )
         })}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default PeopleList;
+export default PeopleList
