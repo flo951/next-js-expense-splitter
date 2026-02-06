@@ -13,12 +13,12 @@ const emailFeedbackStyles = css`
   color: green;
 `
 type SendEmailProps = {
-  user: string;
-  expenseList: string[];
-  balanceMessages: string[];
-  event: Event;
-  participants: string[];
-};
+  user: string
+  expenseList: string[]
+  balanceMessages: string[]
+  event: Event
+  participants: string[]
+}
 const SendEmail = ({
   user,
   expenseList,

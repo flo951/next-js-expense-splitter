@@ -29,12 +29,12 @@ const errorStyles = css`
   font-size: 20px;
 `
 
-type Errors = { message: string }[];
+type Errors = { message: string }[]
 
 type RegisterProps = {
-  refreshUserProfile: () => void;
-  csrfToken: string;
-};
+  refreshUserProfile: () => void
+  csrfToken: string
+}
 
 const Register = ({ refreshUserProfile, csrfToken }: RegisterProps) => {
   const [username, setUsername] = useState('')
@@ -126,7 +126,9 @@ const Register = ({ refreshUserProfile, csrfToken }: RegisterProps) => {
 
 export default Register
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   // 1. check if there is a token and is valid from the cookie
   const token = context.req.cookies.sessionToken
   // 2. if its valid redirect otherwise render the page

@@ -6,4 +6,4 @@ module.exports = {
   server: {
     command: 'yarn start',
   },
-};
+}

@@ -18,7 +18,9 @@ const Logout = () => {
 
 export default Logout
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   const token = context.req.cookies.sessionToken
 
   if (token) {

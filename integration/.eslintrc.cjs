@@ -6,4 +6,4 @@ module.exports = {
     context: true,
     jestPuppeteer: true,
   },
-};
+}

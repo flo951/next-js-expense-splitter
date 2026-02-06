@@ -13,11 +13,11 @@ const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
 export type User = {
-  id: number;
-  username: string;
-};
+  id: number
+  username: string
+}
 
-export type UserWithPasswordHash = User & { passwordHash: string };
+export type UserWithPasswordHash = User & { passwordHash: string }
 
 export async function getUserById(id: number) {
   return await prisma.users.findUnique({
@@ -199,12 +199,12 @@ export async function deleteExpiredSessions() {
 }
 
 export type Person = {
-  id: number;
-  name: string;
-  eventId?: number;
-  userId?: number;
-  person?: string;
-};
+  id: number
+  name: string
+  eventId?: number
+  userId?: number
+  person?: string
+}
 
 // connect person to user that created it
 export async function createPerson(
@@ -269,11 +269,11 @@ export async function getAllPeopleWhereEventIdMatches(eventId: number) {
 }
 
 export type Event = {
-  id: number;
-  eventname: string;
-  userId: number;
-  imageurl: string;
-};
+  id: number
+  eventname: string
+  userId: number
+  imageurl: string
+}
 
 export async function createEvent(eventName: string, userId: number) {
   // const event = await client.sql<Event>`
@@ -383,17 +383,17 @@ export async function getSingleEvent(eventId: number) {
 }
 
 export type Expense = {
-  id: number;
-  expensename: string;
-  personExpense?: number;
-  cost: number;
-  eventId: number;
-  paymaster: number;
-};
+  id: number
+  expensename: string
+  personExpense?: number
+  cost: number
+  eventId: number
+  paymaster: number
+}
 
 export type ExpenseWithParticipants = Expense & {
-  participantIds: number[];
-};
+  participantIds: number[]
+}
 
 export async function createExpense(
   expenseName: string,

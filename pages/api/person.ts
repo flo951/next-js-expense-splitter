@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type {
-  User} from '../../util/database'
+import type { User } from '../../util/database'
 import {
   createPerson,
   deletePersonById,
@@ -9,26 +8,26 @@ import {
 import type { people } from '@prisma/client'
 
 export type CreatePersonResponseBody = {
-  errors?: { message: string }[];
-  person?: people;
-  personId?: number;
-  user?: User;
-};
+  errors?: { message: string }[]
+  person?: people
+  personId?: number
+  user?: User
+}
 
 export type DeletePersonResponseBody =
   | { person: people }
-  | { errors: { message: string }[] };
+  | { errors: { message: string }[] }
 
 export type CreatePersonRequestBody = {
-  name: string;
-  user: User;
-  personId: number;
-  eventId: number;
-};
+  name: string
+  user: User
+  personId: number
+  eventId: number
+}
 
 type CreatePersonNextApiRequest = Omit<NextApiRequest, 'body'> & {
-  body: CreatePersonRequestBody;
-};
+  body: CreatePersonRequestBody
+}
 
 export default async function createPersonHandler(
   request: CreatePersonNextApiRequest,

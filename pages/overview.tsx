@@ -1,6 +1,5 @@
 import type { GetServerSidePropsContext } from 'next'
-import type {
-  Event} from '../util/database'
+import type { Event } from '../util/database'
 import {
   getAllEventsWhereIdMatches,
   getUserByValidSessionToken,
@@ -41,11 +40,11 @@ const flexRowStyles = css`
 `
 
 type OverviewProps = {
-  user: { id: number; username: string };
-  eventsInDb: Event[];
-  errors: string;
-};
-type Errors = { message: string }[];
+  user: { id: number; username: string }
+  eventsInDb: Event[]
+  errors: string
+}
+type Errors = { message: string }[]
 const Overview = ({ eventsInDb, user, errors }: OverviewProps) => {
   const [errorsView, setErrorsView] = useState<Errors | undefined>([])
   const [eventList, setEventList] = useState<Event[]>(eventsInDb)
@@ -146,7 +145,9 @@ const Overview = ({ eventsInDb, user, errors }: OverviewProps) => {
 
 export default Overview
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   const token = context.req.cookies.sessionToken
 
   const user = await getUserByValidSessionToken(token)

@@ -26,12 +26,12 @@ const resultStyles = css`
   gap: 6px;
 `
 
-type ExpenseWithParticipants = expenses & { participantIds: number[] };
+type ExpenseWithParticipants = expenses & { participantIds: number[] }
 
 type BarChartProps = {
-  peopleList: people[];
-  expenseList: ExpenseWithParticipants[];
-};
+  peopleList: people[]
+  expenseList: ExpenseWithParticipants[]
+}
 
 const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
   const sendExpenseList: string[] = []

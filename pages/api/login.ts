@@ -1,28 +1,27 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcrypt'
-import type {
-  User} from '../../util/database'
+import type { User } from '../../util/database'
 import {
   createSession,
-  getUserWithPasswordHashByUsername
+  getUserWithPasswordHashByUsername,
 } from '../../util/database'
 import crypto from 'node:crypto'
 import { createSerializedRegisterSessionTokenCookie } from '../../util/cookies'
 import { verifyCsrfToken } from '../../util/auth'
 
 type LoginRequestBody = {
-  username: string;
-  password: string;
-  csrfToken: string;
-};
+  username: string
+  password: string
+  csrfToken: string
+}
 
 type LoginNextApiRequest = Omit<NextApiRequest, 'body'> & {
-  body: LoginRequestBody;
-};
+  body: LoginRequestBody
+}
 
 export type LoginResponseBody =
   | { errors: { message: string }[] }
-  | { user: Pick<User, 'id'> };
+  | { user: Pick<User, 'id'> }
 
 export default async function loginHandler(
   request: LoginNextApiRequest,

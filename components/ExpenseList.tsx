@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import type { expenses, people } from '@prisma/client'
 import type { CreateExpenseResponseBody } from '../pages/api/expense'
-import type { Errors} from '../pages/createevent'
+import type { Errors } from '../pages/createevent'
 import { formStyles, spanStyles } from '../pages/createevent'
 import {
   expenseContainerStyles,
@@ -13,7 +13,7 @@ import {
   spanErrorStyles,
 } from '../pages/users/[eventId]'
 
-type ExpenseWithParticipants = expenses & { participantIds: number[] };
+type ExpenseWithParticipants = expenses & { participantIds: number[] }
 
 const participantCheckboxContainerStyles = css`
   display: flex;
@@ -49,23 +49,23 @@ const participantListStyles = css`
 `
 
 type ExpenseListProps = {
-  personExpense: string;
-  setPersonExpense: (person: string) => void;
-  expenseError: string;
-  setExpenseError: (error: string) => void;
-  selectedPersonId: number;
-  selectedParticipants: number[];
-  setSelectedParticipants: (ids: number[]) => void;
-  expenseName: string;
-  setExpenseName: (name: string) => void;
-  expenseList: ExpenseWithParticipants[];
-  setExpenseList: (expense: ExpenseWithParticipants[]) => void;
-  setErrors: (error: Errors | undefined) => void;
-  peopleList: people[];
-  eventId: number;
-  deleteExpense: (expenseId: number) => void;
-  handleSelectPerson: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-};
+  personExpense: string
+  setPersonExpense: (person: string) => void
+  expenseError: string
+  setExpenseError: (error: string) => void
+  selectedPersonId: number
+  selectedParticipants: number[]
+  setSelectedParticipants: (ids: number[]) => void
+  expenseName: string
+  setExpenseName: (name: string) => void
+  expenseList: ExpenseWithParticipants[]
+  setExpenseList: (expense: ExpenseWithParticipants[]) => void
+  setErrors: (error: Errors | undefined) => void
+  peopleList: people[]
+  eventId: number
+  deleteExpense: (expenseId: number) => void
+  handleSelectPerson: (event: React.ChangeEvent<HTMLSelectElement>) => void
+}
 const ExpenseList = ({
   personExpense,
   setPersonExpense,
@@ -92,9 +92,7 @@ const ExpenseList = ({
           e.preventDefault()
 
           if (parseFloat(personExpense) <= 0) {
-            setExpenseError(
-              'Invalid input, please enter a positive value',
-            )
+            setExpenseError('Invalid input, please enter a positive value')
             return
           }
           const testNumber: number = parseInt(personExpense)
@@ -244,9 +242,7 @@ const ExpenseList = ({
               setExpenseName(e.currentTarget.value)
             }}
           />
-          {expenseError && (
-            <span css={spanErrorStyles}> {expenseError}</span>
-          )}
+          {expenseError && <span css={spanErrorStyles}> {expenseError}</span>}
           <input
             data-test-id="complete-expense"
             css={inputExpenseSubmitStyles}

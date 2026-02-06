@@ -37,12 +37,12 @@ export const errorStyles = css`
   color: red;
   font-size: 20px;
 `
-type Errors = { message: string }[];
+type Errors = { message: string }[]
 
 type LoginProps = {
-  refreshUserProfile: () => void;
-  csrfToken: string;
-};
+  refreshUserProfile: () => void
+  csrfToken: string
+}
 
 const Login = ({ refreshUserProfile, csrfToken }: LoginProps) => {
   const [username, setUsername] = useState('')

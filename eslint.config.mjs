@@ -1,15 +1,15 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { FlatCompat } from '@eslint/eslintrc'
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-});
+})
 
 export default tseslint.config(
   js.configs.recommended,
@@ -36,7 +36,7 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
       'prefer-const': 'error',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'semi': ['error', 'never'],
+      semi: ['error', 'never'],
     },
   },
   {
@@ -45,4 +45,4 @@ export default tseslint.config(
       '@typescript-eslint/no-require-imports': 'off',
     },
   },
-);
+)

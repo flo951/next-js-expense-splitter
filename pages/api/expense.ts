@@ -6,29 +6,29 @@ import {
 } from '../../util/database'
 import type { expenses } from '@prisma/client'
 
-type ExpenseWithParticipants = expenses & { participantIds: number[] };
+type ExpenseWithParticipants = expenses & { participantIds: number[] }
 
 export type CreateExpenseResponseBody =
   | { errors: { message: string }[] }
-  | { expense: ExpenseWithParticipants };
+  | { expense: ExpenseWithParticipants }
 
 export type DeleteExpenseResponseBody = {
-  expense: expenses;
-  errors?: { message: string }[];
-};
+  expense: expenses
+  errors?: { message: string }[]
+}
 
 type CreateEventRequestBody = {
-  expensename: string;
-  cost: number;
-  eventId: number;
-  expenseId?: number;
-  paymaster: number;
-  participantIds: number[];
-};
+  expensename: string
+  cost: number
+  eventId: number
+  expenseId?: number
+  paymaster: number
+  participantIds: number[]
+}
 
 type CreateEventNextApiRequest = Omit<NextApiRequest, 'body'> & {
-  body: CreateEventRequestBody;
-};
+  body: CreateEventRequestBody
+}
 
 export default async function createEventHandler(
   request: CreateEventNextApiRequest,
