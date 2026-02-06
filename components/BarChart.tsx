@@ -32,7 +32,7 @@ type BarChartProps = {
   expenseList: ExpenseWithParticipants[];
 };
 
-export default function BarChart({ peopleList, expenseList }: BarChartProps) {
+const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
   const sendExpenseList: string[] = [];
   expenseList.map((expense) => {
     return peopleList.map((person) => {
@@ -187,4 +187,6 @@ export default function BarChart({ peopleList, expenseList }: BarChartProps) {
       </div>
     </div>
   );
-}
+};
+
+export default BarChart;

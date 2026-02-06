@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { deleteSessionByToken } from '../util/database';
 import { serialize } from 'cookie';
 
-export default function Logout() {
+const Logout = () => {
   return (
     <>
       <Head>
@@ -14,9 +14,11 @@ export default function Logout() {
       <h1>Logged out</h1>
     </>
   );
-}
+};
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+export default Logout;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const token = context.req.cookies.sessionToken;
 
   if (token) {

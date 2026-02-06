@@ -213,7 +213,7 @@ type UserDetailProps = {
   uploadPreset: string;
 };
 
-export default function UserDetail({
+const UserDetail = ({
   user,
   eventInDb,
   errors,
@@ -222,7 +222,7 @@ export default function UserDetail({
   profileImageInDb,
   cloudName,
   uploadPreset,
-}: UserDetailProps) {
+}: UserDetailProps) => {
   const [eventList, setEventList] = useState<Event[]>([eventInDb]);
   const [peopleList, setPeopleList] = useState<people[]>(peopleInDb);
   const [personExpense, setPersonExpense] = useState('');
@@ -246,7 +246,7 @@ export default function UserDetail({
   const router = useRouter();
 
   useEffect(() => {
-    function calculateTotalSumPerEvent() {
+    const calculateTotalSumPerEvent = () => {
       if (typeof eventInDb === 'undefined') {
         return;
       }
@@ -257,7 +257,7 @@ export default function UserDetail({
 
       const sum = cost.reduce((partialSum, a) => partialSum + a, 0);
       setSumEventCosts(sum.toFixed(2));
-    }
+    };
     calculateTotalSumPerEvent();
   }, [expenseList, eventInDb]);
 
@@ -280,7 +280,7 @@ export default function UserDetail({
     );
   }
 
-  async function deleteExpense(id: number) {
+  const deleteExpense = async (id: number) => {
     const deleteResponse = await fetch(`/api/expense`, {
       method: 'DELETE',
       headers: {
@@ -304,19 +304,19 @@ export default function UserDetail({
       setExpenseList(newExpenseList);
       return;
     }
-  }
+  };
   // select a created person in a dropdown as a template for adding expenses
-  function handleSelectPerson(event: React.ChangeEvent<HTMLSelectElement>) {
+  const handleSelectPerson = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const personId = parseInt(event.target.value);
     setSelectedPersonId(personId);
     // Ensure paymaster is in selected participants
     if (!selectedParticipants.includes(personId) && personId !== 0) {
       setSelectedParticipants([...selectedParticipants, personId]);
     }
-  }
+  };
 
   // function to delete created events
-  async function deleteEvent(id: number) {
+  const deleteEvent = async (id: number) => {
     const deleteResponse = await fetch(`/api/event`, {
       method: 'DELETE',
       headers: {
@@ -341,10 +341,10 @@ export default function UserDetail({
 
     setEventList(newEventList);
     await router.push(`/createevent`).catch((err) => console.log(err));
-  }
+  };
 
   // function to upload event images
-  async function handleUploadImage(eventId: number) {
+  const handleUploadImage = async (eventId: number) => {
     if (!uploadImage) {
       setUploadError('No Image selected');
       return;
@@ -405,7 +405,7 @@ export default function UserDetail({
 
     setIsLoading(false);
     setEditButtonImageUpload(false);
-  }
+  };
 
   return (
     <>
@@ -546,15 +546,18 @@ export default function UserDetail({
                 <span css={spanStyles}> Total: {sumEventCosts} €</span>
               </div>
 
-              <BarChart people={peopleList} expenses={expenseList} />
+              <BarChart peopleList={peopleList} expenseList={expenseList} />
             </div>
           );
         })}
       </main>
     </>
   );
-}
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+};
+
+export default UserDetail;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const eventId = context.query.eventId as string;
 
   const token = context.req.cookies.sessionToken;

@@ -19,13 +19,13 @@ type SendEmailProps = {
   event: Event;
   participants: string[];
 };
-export default function SendEmail({
+const SendEmail = ({
   user,
   expenseList,
   balanceMessages,
   event,
   participants,
-}: SendEmailProps) {
+}: SendEmailProps) => {
   const [name, setName] = useState(user);
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -117,4 +117,6 @@ export default function SendEmail({
       </form>
     </div>
   );
-}
+};
+
+export default SendEmail;

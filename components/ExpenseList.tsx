@@ -65,7 +65,7 @@ type ExpenseListProps = {
   deleteExpense: (expenseId: number) => void;
   handleSelectPerson: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 };
-export default function ExpenseList({
+const ExpenseList = ({
   personExpense,
   setPersonExpense,
   expenseError,
@@ -82,7 +82,7 @@ export default function ExpenseList({
   eventId,
   deleteExpense,
   handleSelectPerson,
-}: ExpenseListProps) {
+}: ExpenseListProps) => {
   return (
     <>
       <form
@@ -294,4 +294,6 @@ export default function ExpenseList({
       })}
     </>
   );
-}
+};
+
+export default ExpenseList;

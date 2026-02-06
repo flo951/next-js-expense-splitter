@@ -3,7 +3,7 @@ import { AppProps } from 'next/app';
 import { useCallback, useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   const [user, setUser] = useState();
 
   const refreshUserProfile = useCallback(async () => {

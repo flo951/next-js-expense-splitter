@@ -102,7 +102,7 @@ type CreateEventProps = {
 
 export type Errors = { message: string }[];
 
-export default function CreateEvent({ eventsInDb, user, errors }: CreateEventProps) {
+const CreateEvent = ({ eventsInDb, user, errors }: CreateEventProps) => {
   const [eventName, setEventName] = useState('');
   const [eventList, setEventList] = useState<events[]>(eventsInDb);
   const [formErrors, setFormErrors] = useState<Errors | undefined>([]);
@@ -114,7 +114,7 @@ export default function CreateEvent({ eventsInDb, user, errors }: CreateEventPro
       </main>
     );
   }
-  async function deleteEvent(id: number) {
+  const deleteEvent = async (id: number) => {
     const deleteResponse = await fetch(`/api/event`, {
       method: 'DELETE',
       headers: {
@@ -138,7 +138,7 @@ export default function CreateEvent({ eventsInDb, user, errors }: CreateEventPro
     });
 
     setEventList(newEventList);
-  }
+  };
 
   return (
     <>
@@ -250,9 +250,11 @@ export default function CreateEvent({ eventsInDb, user, errors }: CreateEventPro
       </main>
     </>
   );
-}
+};
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+export default CreateEvent;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const sessionToken = context.req.cookies.sessionToken;
   const session = await getValidSessionByToken(sessionToken);
   if (!session) {

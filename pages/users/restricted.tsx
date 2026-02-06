@@ -18,7 +18,7 @@ type RestrictedPageProps =
       error: string;
     };
 
-export default function RestrictedPage(props: RestrictedPageProps) {
+const RestrictedPage = (props: RestrictedPageProps) => {
   if ('error' in props) {
     return (
       <main css={mainStyles}>
@@ -32,8 +32,11 @@ export default function RestrictedPage(props: RestrictedPageProps) {
       <h1>you will only see this when you are logged in</h1>
     </main>
   );
-}
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+};
+
+export default RestrictedPage;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const sessionToken = context.req.cookies.sessionToken;
   const session = await getValidSessionByToken(sessionToken);
 

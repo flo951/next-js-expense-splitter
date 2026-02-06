@@ -5,7 +5,7 @@ type LayoutProps = {
   children: object;
   userObject?: User;
 };
-export default function Layout({ children, userObject }: LayoutProps) {
+const Layout = ({ children, userObject }: LayoutProps) => {
   return (
     <>
       <Head>
@@ -19,4 +19,6 @@ export default function Layout({ children, userObject }: LayoutProps) {
       <main>{children}</main>
     </>
   );
-}
+};
+
+export default Layout;

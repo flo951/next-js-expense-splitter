@@ -39,17 +39,17 @@ const flexRowStyles = css`
   }
 `;
 
-type Props = {
+type OverviewProps = {
   user: { id: number; username: string };
   eventsInDb: Event[];
   errors: string;
 };
 type Errors = { message: string }[];
-export default function ProtectedUser({ eventsInDb, user, errors }: Props) {
+const Overview = ({ eventsInDb, user, errors }: OverviewProps) => {
   const [errorsView, setErrorsView] = useState<Errors | undefined>([]);
   const [eventList, setEventList] = useState<Event[]>(eventsInDb);
   // function to delete created events
-  async function deleteEvent(id: number) {
+  const deleteEvent = async (id: number) => {
     const deleteResponse = await fetch(`/api/event`, {
       method: 'DELETE',
       headers: {
@@ -73,7 +73,7 @@ export default function ProtectedUser({ eventsInDb, user, errors }: Props) {
     });
 
     setEventList(newEventList);
-  }
+  };
   if (errors) {
     return (
       <main>
@@ -141,8 +141,11 @@ export default function ProtectedUser({ eventsInDb, user, errors }: Props) {
       </main>
     </>
   );
-}
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+};
+
+export default Overview;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   const token = context.req.cookies.sessionToken;
 
   const user = await getUserByValidSessionToken(token);

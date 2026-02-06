@@ -44,7 +44,7 @@ type LoginProps = {
   csrfToken: string;
 };
 
-export default function Login({ refreshUserProfile, csrfToken }: LoginProps) {
+const Login = ({ refreshUserProfile, csrfToken }: LoginProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Errors>([]);
@@ -143,8 +143,11 @@ export default function Login({ refreshUserProfile, csrfToken }: LoginProps) {
       </div>
     </>
   );
-}
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+};
+
+export default Login;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   // 1. check if there is a token and is valid from the cookie
 
   const token = context.req.cookies.sessionToken;

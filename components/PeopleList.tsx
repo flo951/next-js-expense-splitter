@@ -24,7 +24,7 @@ type PeopleListProps = {
   setPeopleList: (people: people[]) => void;
   peopleList: people[];
 };
-export default function PeopleList({
+const PeopleList = ({
   user,
   setErrors,
   expenseList,
@@ -32,11 +32,11 @@ export default function PeopleList({
   eventId,
   setPeopleList,
   peopleList,
-}: PeopleListProps) {
+}: PeopleListProps) => {
   const [personName, setPersonName] = useState('');
 
   // function to delete created people
-  async function deletePerson(id: number) {
+  const deletePerson = async (id: number) => {
     const deleteResponse = await fetch(`/api/person`, {
       method: 'DELETE',
       headers: {
@@ -76,7 +76,7 @@ export default function PeopleList({
 
       return;
     }
-  }
+  };
   return (
     <>
       <form
@@ -166,4 +166,6 @@ export default function PeopleList({
       </div>
     </>
   );
-}
+};
+
+export default PeopleList;

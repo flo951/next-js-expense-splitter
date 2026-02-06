@@ -80,16 +80,16 @@ type HeaderProps = {
   userObject?: User;
 };
 
-function Anchor({
+const Anchor = ({
   children,
   ...restProps
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
   css?: Interpolation<Theme>;
-}) {
+}) => {
   return <a {...restProps}>{children}</a>;
-}
+};
 
-export default function Header({ userObject }: HeaderProps) {
+const Header = ({ userObject }: HeaderProps) => {
   return (
     <header css={headerStyles}>
       {userObject ? (
@@ -123,4 +123,6 @@ export default function Header({ userObject }: HeaderProps) {
       )}
     </header>
   );
-}
+};
+
+export default Header;

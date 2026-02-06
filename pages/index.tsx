@@ -34,7 +34,7 @@ const videoContainerStyles = css`
   }
 `;
 
-export default function Home() {
+const Home = () => {
   return (
     <>
       <Head>
@@ -62,4 +62,6 @@ export default function Home() {
       </main>
     </>
   );
-}
+};
+
+export default Home;

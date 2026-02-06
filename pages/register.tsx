@@ -36,7 +36,7 @@ type RegisterProps = {
   csrfToken: string;
 };
 
-export default function Register({ refreshUserProfile, csrfToken }: RegisterProps) {
+const Register = ({ refreshUserProfile, csrfToken }: RegisterProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Errors>([]);
@@ -122,8 +122,11 @@ export default function Register({ refreshUserProfile, csrfToken }: RegisterProp
       </div>
     </>
   );
-}
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+};
+
+export default Register;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   // 1. check if there is a token and is valid from the cookie
   const token = context.req.cookies.sessionToken;
   // 2. if its valid redirect otherwise render the page
