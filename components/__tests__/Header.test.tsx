@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import Header from '../Header'
-import type { User } from '../../util/database'
+import type { User } from '@/types'
+import Header from '@/components/layout/Header'
 
 // Mock next/link
 jest.mock('next/link', () => {
@@ -77,7 +77,7 @@ describe('Header component', () => {
 
       const createEventLink = screen.getByText('Create New Event')
       expect(createEventLink).toBeInTheDocument()
-      expect(createEventLink).toHaveAttribute('href', '/createevent')
+      expect(createEventLink).toHaveAttribute('href', '/events/create')
     })
 
     it('should render Logout link', () => {

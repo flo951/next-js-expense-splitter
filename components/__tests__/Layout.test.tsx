@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import Layout from '../Layout'
-import type { User } from '../../util/database'
+import Layout from '@/components/layout/RootLayout'
+import type { User } from '@/types'
 
 // Mock next/head
 jest.mock('next/head', () => {

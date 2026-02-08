@@ -21,9 +21,14 @@ yarn lint             # Run ESLint
 yarn format           # Format all files with Prettier
 yarn format:check     # Check formatting without writing
 
-# Database
-yarn migrate up       # Run database migrations
-yarn migrate down     # Rollback migrations
+# Database (Docker PostgreSQL)
+yarn db:up            # Start local PostgreSQL in Docker
+yarn db:down          # Stop PostgreSQL (keeps data)
+yarn db:migrate       # Create and apply Prisma migrations (dev)
+yarn db:push          # Push schema changes without migrations (faster for dev)
+yarn db:reset         # Reset database (removes all data, pushes schema)
+yarn db:studio        # Open Prisma Studio GUI
+yarn db:logs          # View PostgreSQL logs
 
 # Testing
 yarn jest             # Run unit tests (util/__tests__/)
@@ -65,11 +70,37 @@ yarn jest --watch     # Run tests in watch mode
 - Authorization checks use `getUserByValidSessionToken()` with session cookie
 - Prisma v7 uses driver adapters pattern for database connection
 
-## Environment Variables
+## Local Development Setup
+
+### First Time Setup
+
+1. **Copy environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Start PostgreSQL in Docker:**
+   ```bash
+   yarn db:up
+   ```
+
+3. **Push database schema:**
+   ```bash
+   yarn db:push
+   ```
+
+4. **Start development server:**
+   ```bash
+   yarn dev
+   ```
+
+### Environment Variables
 
 Required in `.env` (see `.env.example`):
 
-- `POSTGRES_PRISMA_URL` - Database connection URL (pooled)
-- `POSTGRES_URL_NON_POOLING` - Database connection URL (direct, for migrations)
-- `CSRF_SECRET_SALT` - CSRF protection secret
+- `POSTGRES_PRISMA_URL` - Database connection URL (defaults to local Docker on port 5432)
+- `POSTGRES_URL_NON_POOLING` - Database connection URL (defaults to local Docker on port 5432)
+- `CSRF_SECRET_SALT` - CSRF protection secret (use any string for dev)
 - `CLOUD_NAME`, `UPLOAD_PRESET` - Cloudinary for image uploads
+
+**Default local setup:** The `.env.example` is pre-configured for the Docker PostgreSQL container. Just copy it to `.env` and you're ready to go.

@@ -1,14 +1,13 @@
 module.exports = {
-  presets: [
+  presets: ['next/babel'],
+  plugins: [
     [
-      'next/babel',
+      '@emotion/babel-plugin',
       {
-        'preset-react': {
-          runtime: 'automatic',
-          importSource: '@emotion/react',
-        },
+        sourceMap: true,
+        autoLabel: 'dev-only',
+        labelFormat: '[local]',
       },
     ],
   ],
-  plugins: ['@emotion/babel-plugin'],
 }

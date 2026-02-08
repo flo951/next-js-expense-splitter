@@ -6,14 +6,23 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
+    "test": "jest --coverage",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "migrate": "dotenv ley",
-    "heroku-postbuild": "yarn migrate up && yarn build"
+    "postbuild": "prisma migrate deploy && yarn build",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:reset": "docker compose down -v && docker compose up -d && prisma db push",
+    "db:studio": "prisma studio",
+    "db:logs": "docker compose logs -f postgres"
   },
   "dependencies": {
     "@emotion/babel-plugin": "^11.13.5",
+    "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
@@ -31,6 +40,7 @@
     "react": "^19.2.4",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.4",
+    "server-only": "^0.0.1",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
@@ -39,6 +49,7 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/bcrypt": "^5.0.2",
     "@types/dotenv-safe": "^8.1.6",
     "@types/jest": "^29.5.14",

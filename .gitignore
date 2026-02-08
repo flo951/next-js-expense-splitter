@@ -39,3 +39,5 @@ yarn-error.log*
 
 # Yarn
 .yarn/install-state.gz
+
+/.idea/
