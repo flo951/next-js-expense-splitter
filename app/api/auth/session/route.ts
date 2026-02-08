@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { getUserByValidSessionToken } from '@/lib/db/users'
 import type { ProfileResponseBody } from '@/types'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const cookieStore = await cookies()
   const token = cookieStore.get('sessionToken')?.value
 

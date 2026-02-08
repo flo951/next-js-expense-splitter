@@ -32,7 +32,7 @@ export async function DELETE(
   }
 
   const body: DeleteExpenseRequestBody = await request.json()
-  const { expenseId } = await params
+  const { expenseId: _expenseId } = await params
 
   if (typeof body.expenseId !== 'number' || !body.expenseId) {
     return NextResponse.json(

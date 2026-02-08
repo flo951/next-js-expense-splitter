@@ -45,7 +45,7 @@ export async function DELETE(
   }
 
   const body: DeleteEventRequestBody = await request.json()
-  const { eventId } = await params
+  const { eventId: _eventId } = await params
 
   if (
     typeof body.eventId !== 'number' ||

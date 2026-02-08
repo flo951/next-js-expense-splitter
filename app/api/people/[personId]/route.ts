@@ -34,7 +34,7 @@ export async function DELETE(
   }
 
   const body: DeletePersonRequestBody = await request.json()
-  const { personId } = await params
+  const { personId: _personId } = await params
 
   if (
     typeof body.personId !== 'number' ||

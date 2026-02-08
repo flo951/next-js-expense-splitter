@@ -30,7 +30,6 @@ const mainStyles = css`
   h1 {
     font-size: 20px;
   }
-
   @media only screen and (max-width: 1124px) {
     display: flex;
     flex-direction: column;
@@ -280,7 +279,7 @@ export default function EventDetail({
           setUploadError('')
         }
       }
-    } catch (error) {
+    } catch {
       setUploadError('Failed to upload image')
     } finally {
       setIsLoading(false)

@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { deleteSessionByToken } from '@/lib/db/sessions'
 import { serialize } from 'cookie'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   const cookieStore = await cookies()
   const token = cookieStore.get('sessionToken')?.value
 
