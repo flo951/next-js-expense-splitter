@@ -1,4 +1,4 @@
-name: Jest tests
+name: Build and test
 on: push
 
 jobs:
@@ -7,17 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '22'
-
       - name: Enable Corepack
         run: corepack enable
-
       - name: Install dependencies
         run: yarn install --immutable
-
       - name: Run Jest tests
-        run: yarn jest
+        run: yarn jest --coverage
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets. SONAR_TOKEN }}

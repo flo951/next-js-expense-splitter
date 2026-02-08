@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react'
 import type { User } from '@/types'
-import Header from './header'
+import Header from "@/components/layout/Header";
 
 type RootLayoutProps = {
   children: ReactNode
