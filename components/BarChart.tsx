@@ -5,6 +5,7 @@ import { css } from '@emotion/react'
 import { spanStyles } from '../pages/createevent'
 import type { Balances } from '../util/splitPayments'
 import { splitPayments } from '../util/splitPayments'
+import { calculatePersonBalances } from '../util/expenseBalances'
 
 import type { expenses, people } from '@prisma/client'
 
@@ -56,44 +57,11 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
     )
   }
 
-  const expensePerPerson = peopleList.map((person) => {
-    // Calculate what this person paid
-    const totalPaid = expenseList
-      .filter((expense) => expense.paymaster === person.id)
-      .reduce((sum, expense) => sum + (expense.cost || 0) / 100, 0)
-
-    // Calculate what this person owes (their share of expenses they're part of)
-    const totalOwed = expenseList
-      .filter((expense) => expense.participantIds.includes(person.id))
-      .reduce((sum, expense) => {
-        const shareAmount =
-          (expense.cost || 0) / 100 / expense.participantIds.length
-        return sum + shareAmount
-      }, 0)
-
-    // Balance = what they paid - what they owe
-    const balance = Math.round((totalPaid - totalOwed) * 100) / 100
-
-    return {
-      personSum: {
-        sum: balance,
-        personId: person.id,
-        personName: person.name,
-      },
-    }
-  })
-
-  // Balances for each person
-  const balances = []
-
-  for (let i = 0; i < expensePerPerson.length; i++) {
-    balances.push(expensePerPerson[i].personSum)
-  }
+  const personBalances = calculatePersonBalances(peopleList, expenseList)
 
   // Convert balances to object format for settlement calculation
-  const payments: Balances = balances.reduce(
-    (obj, item) => Object.assign(obj, { [item.personName]: item.sum }),
-    {},
+  const payments: Balances = Object.fromEntries(
+    personBalances.map((pb) => [pb.personName, pb.balance]),
   )
   const balanceMessages = splitPayments(payments)
 
@@ -104,9 +72,7 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
     datasets: [
       {
         label: 'Positive Balances in €',
-        data: expensePerPerson.map((expense) => {
-          return expense.personSum.sum > 0 ? expense.personSum.sum : 0
-        }),
+        data: personBalances.map((pb) => (pb.balance > 0 ? pb.balance : 0)),
         options: {
           plugins: {
             subtitle: {
@@ -121,9 +87,7 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
       },
       {
         label: 'Negative Balances in €',
-        data: expensePerPerson.map((expense) => {
-          return expense.personSum.sum < 0 ? expense.personSum.sum : 0
-        }),
+        data: personBalances.map((pb) => (pb.balance < 0 ? pb.balance : 0)),
         options: {
           plugins: {
             subtitle: {
@@ -173,14 +137,14 @@ const BarChart = ({ peopleList, expenseList }: BarChartProps) => {
           )
         })}
 
-        {expensePerPerson.map((item) => {
+        {personBalances.map((item) => {
           return (
-            item.personSum.sum > 0 && (
+            item.balance > 0 && (
               <span
-                key={`person-${item.personSum.personId} receives money `}
+                key={`person-${item.personId} receives money `}
                 css={spanStyles}
               >
-                {` ${item.personSum.personName} receives ${item.personSum.sum.toFixed(2)}€`}
+                {` ${item.personName} receives ${item.balance.toFixed(2)}€`}
               </span>
             )
           )
