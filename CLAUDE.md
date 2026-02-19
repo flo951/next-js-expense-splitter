@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Senior developer instructions for Claude Code when working in this repository. Follow every rule here exactly — these override general defaults.
+Instructions for Claude Code when working in this repository. Follow every rule here exactly — these override general defaults.
 
 ---
 
