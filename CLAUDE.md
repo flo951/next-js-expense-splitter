@@ -25,9 +25,9 @@ yarn lint              # Run ESLint (must pass before committing)
 yarn format            # Format all files with Prettier
 yarn format:check      # Check formatting without writing
 
-# Database (uses ley, NOT prisma migrate)
-yarn migrate up        # Run pending migrations
-yarn migrate down      # Rollback last migration
+# Database
+yarn migrate           # Create and apply a new migration (dev only)
+                       # Alias for: prisma migrate dev
 
 # Testing
 yarn jest              # Run all unit tests
@@ -54,7 +54,7 @@ util/
   cookies.ts      Session cookie serialization
 prisma/
   schema.prisma   DB schema
-  migrations/     SQL migration files (ley)
+  migrations/     Prisma migration files
 styles/styles.ts  Global Emotion styles
 ```
 
@@ -110,7 +110,11 @@ export async function getMyEntityById(id: number): Promise<MyEntity | null> {
 
 ### Migrations
 
-Use **ley** (`yarn migrate up` / `yarn migrate down`). Never use `prisma migrate dev`, `prisma migrate deploy`, or `prisma db push` in this project.
+Use **Prisma migrate**:
+- `yarn migrate` (`prisma migrate dev`) — create and apply a new migration locally; prompts for a migration name
+- `prisma migrate deploy` — apply pending migrations in production (runs automatically via `heroku-postbuild`)
+
+Never use `prisma db push` — it bypasses the migration history.
 
 ---
 
@@ -220,7 +224,7 @@ Never return 200 with an `errors` field. Use the correct status code.
 | Use `getStaticProps` on auth pages | Page won't re-check session |
 | Add dependencies without checking existing ones | Bundle bloat, complexity |
 | Use `console.log` in committed code | ESLint will warn; handle errors properly |
-| Run `prisma migrate` or `prisma db push` | This project uses ley for migrations |
+| Use `prisma db push` | Bypasses migration history; use `prisma migrate dev` instead |
 | Manually write cascade-delete logic | Check Prisma schema for cascade rules first |
 | Create new API routes without the method/auth/CSRF guard pattern | Inconsistency and security gaps |
 
