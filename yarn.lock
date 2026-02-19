@@ -3812,29 +3812,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cli@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "dotenv-cli@npm:11.0.0"
-  dependencies:
-    cross-spawn: "npm:^7.0.6"
-    dotenv: "npm:^17.1.0"
-    dotenv-expand: "npm:^12.0.0"
-    minimist: "npm:^1.2.6"
-  bin:
-    dotenv: cli.js
-  checksum: 10c0/c3e6e58a484b3204eeb167a8f78c9cb04c4bae951069e7860eccbbbf96964e3bd808b3632dfe841e5d882b2c5d77c447f20abd06edd4db623ce719d94a7fb44e
-  languageName: node
-  linkType: hard
-
-"dotenv-expand@npm:^12.0.0":
-  version: 12.0.3
-  resolution: "dotenv-expand@npm:12.0.3"
-  dependencies:
-    dotenv: "npm:^16.4.5"
-  checksum: 10c0/0824bdc74fc816a28b0744b7853a23e046602e9616c82121dfdae21ebc13c6e89afeb773e794e97c35d48be2be0a990fbca721ee3869a49c04210a58a3cf296f
-  languageName: node
-  linkType: hard
-
 "dotenv-safe@npm:^9.1.0":
   version: 9.1.0
   resolution: "dotenv-safe@npm:9.1.0"
@@ -3844,17 +3821,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.4.5, dotenv@npm:^16.5.0, dotenv@npm:^16.6.1":
+"dotenv@npm:^16.5.0, dotenv@npm:^16.6.1":
   version: 16.6.1
   resolution: "dotenv@npm:16.6.1"
   checksum: 10c0/15ce56608326ea0d1d9414a5c8ee6dcf0fffc79d2c16422b4ac2268e7e2d76ff5a572d37ffe747c377de12005f14b3cc22361e79fc7f1061cce81f77d2c973dc
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:^17.1.0":
-  version: 17.2.4
-  resolution: "dotenv@npm:17.2.4"
-  checksum: 10c0/901aeee9cb40860291bdb452f6ca66aada78438331a026b0bd86fd41b94a79752dbc6a8971f4f26e6cafef11b4a27bb12ea99c0cbe7dfa61791f194727f799e5
   languageName: node
   linkType: hard
 
@@ -4666,13 +4636,11 @@ __metadata:
     cookie: "npm:^1.1.1"
     csrf: "npm:^3.1.0"
     dotenv: "npm:^16.5.0"
-    dotenv-cli: "npm:^11.0.0"
     dotenv-safe: "npm:^9.1.0"
     eslint: "npm:^9.18.0"
     eslint-config-next: "npm:^15.1.0"
     jest: "npm:^29.7.0"
     jest-environment-jsdom: "npm:29"
-    ley: "npm:^0.8.1"
     next: "npm:^16.1.6"
     pg: "npm:^8.18.0"
     prettier: "npm:^3.8.1"
@@ -6577,13 +6545,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kleur@npm:^4.1.0":
-  version: 4.1.4
-  resolution: "kleur@npm:4.1.4"
-  checksum: 10c0/c70aaa99a6797b0a73a6f8a84c3912dbf49c95acf78cb661e30677999914843d0f5deedb0910458259c43c5fd98ea3195777988a8291c058874e29344dd1ea0c
-  languageName: node
-  linkType: hard
-
 "language-subtag-registry@npm:^0.3.20":
   version: 0.3.23
   resolution: "language-subtag-registry@npm:0.3.23"
@@ -6614,20 +6575,6 @@ __metadata:
     prelude-ls: "npm:^1.2.1"
     type-check: "npm:~0.4.0"
   checksum: 10c0/effb03cad7c89dfa5bd4f6989364bfc79994c2042ec5966cb9b95990e2edee5cd8969ddf42616a0373ac49fac1403437deaf6e9050fbbaa3546093a59b9ac94e
-  languageName: node
-  linkType: hard
-
-"ley@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "ley@npm:0.8.1"
-  dependencies:
-    kleur: "npm:^4.1.0"
-    mk-dirs: "npm:^3.0.0"
-    sade: "npm:^1.7.0"
-    totalist: "npm:^2.0.0"
-  bin:
-    ley: bin.js
-  checksum: 10c0/1cbb1c3838c46bc6a0c3e3193105367d8275d0d42047174607d6f9dd1361d9358555fb936a770533b70bddf9cd1176d6c2423da95980b774f4510d0953707f55
   languageName: node
   linkType: hard
 
@@ -6975,26 +6922,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mk-dirs@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "mk-dirs@npm:3.0.0"
-  checksum: 10c0/3ec7acf5fa3a254fb1d9452a71fa7889edcee99189c1b8a7a7054e4a0c6b992b62b34768f072484379842afe4fcf1b6d28ff56574f08472d237e322b970e933e
-  languageName: node
-  linkType: hard
-
 "mkdirp@npm:^1.0.3":
   version: 1.0.4
   resolution: "mkdirp@npm:1.0.4"
   bin:
     mkdirp: bin/cmd.js
   checksum: 10c0/46ea0f3ffa8bc6a5bc0c7081ffc3907777f0ed6516888d40a518c5111f8366d97d2678911ad1a6882bf592fa9de6c784fea32e1687bb94e1f4944170af48a5cf
-  languageName: node
-  linkType: hard
-
-"mri@npm:^1.1.0":
-  version: 1.2.0
-  resolution: "mri@npm:1.2.0"
-  checksum: 10c0/a3d32379c2554cf7351db6237ddc18dc9e54e4214953f3da105b97dc3babe0deb3ffe99cf409b38ea47cc29f9430561ba6b53b24ab8f9ce97a4b50409e4a50e7
   languageName: node
   linkType: hard
 
@@ -8236,15 +8169,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sade@npm:^1.7.0":
-  version: 1.8.1
-  resolution: "sade@npm:1.8.1"
-  dependencies:
-    mri: "npm:^1.1.0"
-  checksum: 10c0/da8a3a5d667ad5ce3bf6d4f054bbb9f711103e5df21003c5a5c1a8a77ce12b640ed4017dd423b13c2307ea7e645adee7c2ae3afe8051b9db16a6f6d3da3f90b1
-  languageName: node
-  linkType: hard
-
 "safe-array-concat@npm:^1.1.3":
   version: 1.1.3
   resolution: "safe-array-concat@npm:1.1.3"
@@ -9038,13 +8962,6 @@ __metadata:
   dependencies:
     is-number: "npm:^7.0.0"
   checksum: 10c0/487988b0a19c654ff3e1961b87f471702e708fa8a8dd02a298ef16da7206692e8552a0250e8b3e8759270f62e9d8314616f6da274734d3b558b1fc7b7724e892
-  languageName: node
-  linkType: hard
-
-"totalist@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "totalist@npm:2.0.0"
-  checksum: 10c0/34dab45da96e6faecf1aa946abd00fb5514486293768b991f799634c68ad43458b6ef6247f5fd9e49182380c7ce4052127ed3fb4380f119d8a13506cdb41161b
   languageName: node
   linkType: hard
 
