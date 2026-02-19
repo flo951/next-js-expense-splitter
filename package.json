@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "migrate": "dotenv ley",
-    "heroku-postbuild": "yarn migrate up && yarn build"
+    "migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@emotion/babel-plugin": "^11.13.5",
@@ -23,9 +22,7 @@
     "cookie": "^1.1.1",
     "csrf": "^3.1.0",
     "dotenv": "^16.5.0",
-    "dotenv-cli": "^11.0.0",
     "dotenv-safe": "^9.1.0",
-    "ley": "^0.8.1",
     "next": "^16.1.6",
     "pg": "^8.18.0",
     "react": "^19.2.4",
