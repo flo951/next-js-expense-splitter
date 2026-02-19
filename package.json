@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "migrate": "prisma migrate dev",
-    "heroku-postbuild": "prisma migrate deploy && yarn build"
+    "migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@emotion/babel-plugin": "^11.13.5",

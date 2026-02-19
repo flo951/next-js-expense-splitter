@@ -112,7 +112,6 @@ export async function getMyEntityById(id: number): Promise<MyEntity | null> {
 
 Use **Prisma migrate**:
 - `yarn migrate` (`prisma migrate dev`) — create and apply a new migration locally; prompts for a migration name
-- `prisma migrate deploy` — apply pending migrations in production (runs automatically via `heroku-postbuild`)
 
 Never use `prisma db push` — it bypasses the migration history.
 
