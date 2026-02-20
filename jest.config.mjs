@@ -5,6 +5,8 @@ const config = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   moduleNameMapper: {
+    '^node:crypto$': '<rootDir>/__mocks__/crypto.js',
+    '^node:(.*)$': '$1',
     '^@/(.*)$': '<rootDir>/$1',
   },
 }

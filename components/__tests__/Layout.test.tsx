@@ -28,7 +28,7 @@ describe('Layout component', () => {
   it('should render children', () => {
     render(
       <Layout>
-        <div data-testid="child-content">Test Content</div>
+        <div data-test-id="child-content">Test Content</div>
       </Layout>,
     )
 
@@ -78,9 +78,9 @@ describe('Layout component', () => {
   it('should render multiple children', () => {
     render(
       <Layout>
-        <div data-testid="first">First</div>
-        <div data-testid="second">Second</div>
-        <div data-testid="third">Third</div>
+        <div data-test-id="first">First</div>
+        <div data-test-id="second">Second</div>
+        <div data-test-id="third">Third</div>
       </Layout>,
     )
 

@@ -124,6 +124,23 @@ describe('calculateSettlements', () => {
   })
 
   describe('edge cases', () => {
+    it('should handle three-way split with repeating decimal amounts', () => {
+      // 100€ paid by A, split three ways → each owes 33.333...€
+      // After rounding: A=+66.67, B=-33.33, C=-33.33
+      // Total settlements should cover A's credit
+      const balances: Balances = {
+        A: 66.67,
+        B: -33.33,
+        C: -33.34, // absorbs the extra cent from rounding
+      }
+
+      const result = calculateSettlements(balances)
+
+      const totalPaid = result.reduce((sum, t) => sum + t.amount, 0)
+      expect(totalPaid).toBeCloseTo(66.67, 1)
+      expect(result.every((t) => t.to === 'A')).toBe(true)
+    })
+
     it('should handle all zero balances', () => {
       const balances: Balances = {
         Alice: 0,
