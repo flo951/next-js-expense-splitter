@@ -2,8 +2,8 @@ name: Jest tests
 on: push
 
 jobs:
-  build:
-    name: Jest tests
+  test:
+    name: Test, lint & build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -12,6 +12,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '22'
+          cache: 'yarn'
 
       - name: Enable Corepack
         run: corepack enable
@@ -19,5 +20,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Lint
+        run: yarn lint
+
+      - name: Format check
+        run: yarn format:check
+
       - name: Run Jest tests
         run: yarn jest
+
+      - name: Build
+        run: yarn build
