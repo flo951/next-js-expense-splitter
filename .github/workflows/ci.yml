@@ -31,3 +31,9 @@ jobs:
 
       - name: Build
         run: yarn build
+        env:
+          POSTGRES_PRISMA_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          POSTGRES_URL_NON_POOLING: postgresql://dummy:dummy@localhost:5432/dummy
+          CSRF_SECRET_SALT: dummy-csrf-secret-for-ci
+          CLOUD_NAME: dummy
+          UPLOAD_PRESET: dummy
