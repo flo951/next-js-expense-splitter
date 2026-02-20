@@ -1,5 +1,5 @@
 type ExpenseForBalance = {
-  paymaster: number
+  paymaster: number | null
   cost: number | null
   participantIds: number[]
 }
