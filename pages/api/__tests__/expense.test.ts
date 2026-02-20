@@ -193,7 +193,7 @@ describe('/api/expense', () => {
 
       await expenseHandler(req, res)
 
-      expect(deleteExpenseById).toHaveBeenCalledWith(10)
+      expect(deleteExpenseById).toHaveBeenCalledWith(10, 1)
       expect(res.status).toHaveBeenCalledWith(201)
     })
   })

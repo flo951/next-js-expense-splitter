@@ -432,20 +432,14 @@ export async function createExpense(
   }
 }
 
-export async function deleteExpenseById(expenseId: number) {
-  // const expense = await client.sql<Expense>`
-  //   DELETE FROM
-  //    expenses
-  //   WHERE
-  //     id = ${expenseId}
-  //   RETURNING *
-  // `;
-  // return camelcaseKeys(expense.rows[0]);
-  return await prisma.expenses.delete({
-    where: {
-      id: expenseId,
-    },
-  })
+export async function deleteExpenseById(expenseId: number, userId: number) {
+  const expense = await prisma.expenses.findUnique({ where: { id: expenseId } })
+  if (!expense || !expense.event_id) return null
+
+  const event = await prisma.events.findUnique({ where: { id: expense.event_id } })
+  if (!event || event.user_id !== userId) return null
+
+  return await prisma.expenses.delete({ where: { id: expenseId } })
 }
 
 export async function getAllExpensesWhereIdMatches(eventId: number) {
