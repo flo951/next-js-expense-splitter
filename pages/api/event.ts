@@ -3,6 +3,7 @@ import type { User } from '../../util/database'
 import {
   createEvent,
   deleteEventById,
+  getSingleEvent,
   getUserByValidSessionToken,
   insertImageUrlEvent,
 } from '../../util/database'
@@ -49,6 +50,12 @@ export default async function createEventHandler(
           errors: [{ message: 'Oops something went wrong' }],
         })
         return // Important, prevents error for multiple requests
+      }
+
+      const eventToUpdate = await getSingleEvent(request.body.eventId)
+      if (!eventToUpdate || eventToUpdate.user_id !== user.id) {
+        response.status(403).json({ errors: [{ message: 'Forbidden' }] })
+        return
       }
 
       const imgUrl = await insertImageUrlEvent(

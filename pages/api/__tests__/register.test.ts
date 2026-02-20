@@ -126,9 +126,7 @@ describe('POST /api/register', () => {
 
     expect(res.status).toHaveBeenCalledWith(201)
     expect(res.setHeader).toHaveBeenCalledWith('Set-Cookie', 'sessionToken=abc; HttpOnly')
-    expect(res.json).toHaveBeenCalledWith({
-      user: { id: 1, username: 'alice', password_hash: 'hashed_password' },
-    })
+    expect(res.json).toHaveBeenCalledWith({})
   })
 
   it('hashes the password before storing', async () => {

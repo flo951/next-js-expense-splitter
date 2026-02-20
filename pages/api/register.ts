@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcrypt'
-import type { User } from '../../util/database'
 import {
   createSession,
   createUser,
@@ -23,7 +22,7 @@ type RegisterNextApiRequest = Omit<NextApiRequest, 'body'> & {
 
 export type RegisterResponseBody =
   | { errors: { message: string }[] }
-  | { user: User }
+  | Record<string, never>
 
 export default async function registerHandler(
   request: RegisterNextApiRequest,
@@ -85,7 +84,7 @@ export default async function registerHandler(
     response
       .status(201)
       .setHeader('Set-Cookie', serializedCookie)
-      .json({ user: user })
+      .json({})
     return
   }
   response.status(405).json({ errors: [{ message: 'Method not supported' }] })
