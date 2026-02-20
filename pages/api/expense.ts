@@ -49,11 +49,8 @@ export default async function createEventHandler(
 
   if (request.method === 'POST') {
     if (
-      typeof request.body.expensename !== 'string' ||
       !request.body.expensename ||
-      typeof request.body.cost !== 'number' ||
       !request.body.cost ||
-      typeof request.body.paymaster !== 'number' ||
       request.body.paymaster === 0 ||
       !Array.isArray(request.body.participantIds) ||
       request.body.participantIds.length === 0
@@ -89,7 +86,10 @@ export default async function createEventHandler(
       return // Important, prevents error for multiple requests
     }
 
-    const deletedExpense = await deleteExpenseById(request.body.expenseId, user.id)
+    const deletedExpense = await deleteExpenseById(
+      request.body.expenseId,
+      user.id,
+    )
 
     if (!deletedExpense) {
       response.status(404).json({ errors: [{ message: 'Name not provided' }] })

@@ -30,11 +30,8 @@ export default async function registerHandler(
 ) {
   if (request.method === 'POST') {
     if (
-      typeof request.body.username !== 'string' ||
       !request.body.username ||
-      typeof request.body.password !== 'string' ||
       !request.body.password ||
-      typeof request.body.csrfToken !== 'string' ||
       !request.body.csrfToken
     ) {
       // 400 bad request
@@ -81,10 +78,7 @@ export default async function registerHandler(
     )
 
     // status code 201 means something was created
-    response
-      .status(201)
-      .setHeader('Set-Cookie', serializedCookie)
-      .json({})
+    response.status(201).setHeader('Set-Cookie', serializedCookie).json({})
     return
   }
   response.status(405).json({ errors: [{ message: 'Method not supported' }] })

@@ -50,20 +50,28 @@ describe('POST /api/register', () => {
     jest.mocked(verifyCsrfToken).mockReturnValue(true)
     jest.mocked(getUserByUsername).mockResolvedValue(null)
     jest.mocked(bcrypt.hash).mockResolvedValue('hashed_password' as never)
-    jest.mocked(createUser).mockResolvedValue({ id: 1, username: 'alice', password_hash: 'hashed_password' })
+    jest.mocked(createUser).mockResolvedValue({
+      id: 1,
+      username: 'alice',
+      password_hash: 'hashed_password',
+    })
     jest.mocked(createSession).mockResolvedValue({
       id: 1,
       token: 'session-token',
       user_id: 1,
       expiry_timestamp: new Date(),
     })
-    jest.mocked(createSerializedRegisterSessionTokenCookie).mockResolvedValue(
-      'sessionToken=abc; HttpOnly',
-    )
+    jest
+      .mocked(createSerializedRegisterSessionTokenCookie)
+      .mockResolvedValue('sessionToken=abc; HttpOnly')
   })
 
   it('returns 400 when username is empty', async () => {
-    const req = createPostReq({ username: '', password: 'pass', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: '',
+      password: 'pass',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await registerHandler(req, res)
@@ -75,7 +83,11 @@ describe('POST /api/register', () => {
   })
 
   it('returns 400 when password is empty', async () => {
-    const req = createPostReq({ username: 'alice', password: '', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: '',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await registerHandler(req, res)
@@ -94,7 +106,11 @@ describe('POST /api/register', () => {
 
   it('returns 403 when CSRF token is invalid', async () => {
     jest.mocked(verifyCsrfToken).mockReturnValue(false)
-    const req = createPostReq({ username: 'alice', password: 'pass', csrfToken: 'bad' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'pass',
+      csrfToken: 'bad',
+    })
     const res = createMockRes()
 
     await registerHandler(req, res)
@@ -107,7 +123,11 @@ describe('POST /api/register', () => {
 
   it('returns 409 when username is already taken', async () => {
     jest.mocked(getUserByUsername).mockResolvedValue({ id: 42 })
-    const req = createPostReq({ username: 'alice', password: 'pass', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'pass',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await registerHandler(req, res)
@@ -119,18 +139,29 @@ describe('POST /api/register', () => {
   })
 
   it('returns 201 and sets cookie on successful registration', async () => {
-    const req = createPostReq({ username: 'alice', password: 'pass', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'pass',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await registerHandler(req, res)
 
     expect(res.status).toHaveBeenCalledWith(201)
-    expect(res.setHeader).toHaveBeenCalledWith('Set-Cookie', 'sessionToken=abc; HttpOnly')
+    expect(res.setHeader).toHaveBeenCalledWith(
+      'Set-Cookie',
+      'sessionToken=abc; HttpOnly',
+    )
     expect(res.json).toHaveBeenCalledWith({})
   })
 
   it('hashes the password before storing', async () => {
-    const req = createPostReq({ username: 'alice', password: 'mypassword', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'mypassword',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await registerHandler(req, res)
@@ -140,7 +171,11 @@ describe('POST /api/register', () => {
   })
 
   it('returns 405 for GET requests', async () => {
-    const req = { method: 'GET', body: {}, cookies: {} } as unknown as NextApiRequest
+    const req = {
+      method: 'GET',
+      body: {},
+      cookies: {},
+    } as unknown as NextApiRequest
     const res = createMockRes()
 
     await registerHandler(req, res)
