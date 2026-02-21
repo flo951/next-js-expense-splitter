@@ -1,94 +1,99 @@
-# Splitify - Expense Splitting Responsive Web App build with Next.Js
+# Splitify — Expense Splitting Web App
 
-Responsive Web Application to split up expenses from different events equally among all participants. The App calculates who owes how much to whom, and shows statistics who paid for what. In the end you can send the results with a form to an E-Mail recipient. The App has a full Authentication and Authorization process, a user only has access after registering and logging in with an account.
+Splitify is a responsive web application for splitting expenses across events. Create an event, add participants, log expenses with a paymaster, and the app calculates the minimum number of payments needed to settle all debts. Includes per-event statistics and chart visualisations.
 
-## Dependencies
+Full authentication and authorisation — users must register and log in to access their events.
 
-- Next.js
-- Typescript
-- PostgreSQL
-- Postgres.js
-- @emotion/css
-- JS Cookie
-- dotenv-safe
-- ley
-- bcrypt
-- cloudinary
-- chart.js
-- nodemailer
-- Gmail API
-- Jest
-- Jest-Puppeteer
+## Tech Stack
+
+- **Framework** — Next.js 16 (Pages Router)
+- **Database** — PostgreSQL via Prisma v7 (driver adapter: `@prisma/adapter-pg`)
+- **Auth** — Cookie-based sessions, bcrypt password hashing, CSRF protection
+- **Styling** — Emotion CSS-in-JS
+- **Charts** — Chart.js + react-chartjs-2
+- **Image uploads** — Cloudinary
+- **Testing** — Jest + React Testing Library
+
+## Prerequisites
+
+- Node.js 22+
+- PostgreSQL database (local or hosted, e.g. Neon, Supabase)
+- Cloudinary account (for event image uploads)
 
 ## Setup
 
-Clone the repo from GitHub and then install the dependencies:
+**1. Clone and install**
 
-```
-git clone https://github.com/flo951/final-project-upleveled
-cd final-project-upleveled
-yarn
-```
-
-Setup a database with postgres on your computer:
-
-```
-psql <login>
-CREATE DATABASE <database name>;
-CREATE USER <username> WITH ENCRYPTED PASSWORD '<pw>';
-GRANT ALL PRIVILEGES ON DATABASE <database name> TO <user name>;
+```bash
+git clone https://github.com/flo951/next-js-expense-splitter
+cd next-js-expense-splitter
+npm install
 ```
 
-Create a .env file with the userinfo for the database and create .env.example as a template file for userinfo
+**2. Configure environment variables**
 
-Use migrations:
+Copy `.env.example` to `.env` and fill in your values:
 
-```
-yarn migrate up
-```
-
-To delete data from database run:
-
-```
-yarn migrate down
+```bash
+cp .env.example .env
 ```
 
-To run the development server:
+| Variable                   | Description                                          |
+| -------------------------- | ---------------------------------------------------- |
+| `POSTGRES_PRISMA_URL`      | Pooled database connection URL                       |
+| `POSTGRES_URL_NON_POOLING` | Direct database connection URL (used for migrations) |
+| `CSRF_SECRET_SALT`         | Secret string for CSRF token generation              |
+| `CLOUD_NAME`               | Cloudinary cloud name                                |
+| `UPLOAD_PRESET`            | Cloudinary unsigned upload preset                    |
 
+**3. Run database migrations**
+
+```bash
+npm run migrate
 ```
-yarn dev
+
+**4. Start the development server**
+
+```bash
+npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To create the production build of the project run:
+## Commands
 
+```bash
+npm run dev          # Start development server
+npm run build        # Generate Prisma client and build for production
+npm start            # Start production server
+npm test             # Run unit tests
+npm run lint         # Run ESLint
+npm run format       # Format all files with Prettier
+npm run format:check # Check formatting without writing
+npm run migrate      # Create and apply a new database migration
 ```
-yarn build
-yarn start
-```
 
-## Deployment
+## CI/CD
 
-To deploy this project, create a [Heroku Account](https://signup.heroku.com/) and follow the instructions
+GitHub Actions runs on every push:
 
-## Project Preview
+- Dependency install (`npm ci`) with caching
+- Unit tests (`npm test`)
+- Production build (`npm run build`)
 
-### Images from the Application
+A Husky pre-commit hook enforces `npm run lint` and `npm run format:check` before every commit.
+
+## Preview
 
 <div>
 <img src="/public/images/eventpic1.png" width="382" height="586">
 <img src="/public/images/eventpic2.png" width="382" height="586">
-  </div>
-  <div>
+</div>
+<div>
 <img src="/public/images/eventpic3.png" width="382" height="586">
-<img src="/public/images/email_form.png" width="382" height="586">
+<img src="/public/images/eventpic4.png" width="382" height="586">
 </div>
 
-### E-Mail
-
-<img src="/public/images/email.png">
-
-### DrawSQL Database Schema
+## Database Schema
 
 <img src="/public/images/drawsql.png" width="900" height="500">
