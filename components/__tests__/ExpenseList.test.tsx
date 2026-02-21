@@ -222,7 +222,9 @@ describe('ExpenseList component', () => {
       fireEvent.submit(screen.getByTestId('complete-expense').closest('form')!)
 
       await waitFor(() => {
-        expect(setErrors).toHaveBeenCalledWith([{ message: 'Paymaster invalid' }])
+        expect(setErrors).toHaveBeenCalledWith([
+          { message: 'Paymaster invalid' },
+        ])
       })
     })
   })
@@ -232,7 +234,9 @@ describe('ExpenseList component', () => {
       const deleteExpense = jest.fn()
       renderExpenseList({ expenseList: [mockExpense], deleteExpense })
 
-      fireEvent.click(screen.getByLabelText('Delete Button for Expense: Dinner'))
+      fireEvent.click(
+        screen.getByLabelText('Delete Button for Expense: Dinner'),
+      )
 
       expect(deleteExpense).toHaveBeenCalledWith(100)
     })

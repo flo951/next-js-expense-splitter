@@ -85,7 +85,11 @@ describe('/api/person', () => {
     })
 
     it('returns 400 when user.username is missing', async () => {
-      const req = createReq('POST', { name: 'Bob', user: { id: 1 }, eventId: 5 })
+      const req = createReq('POST', {
+        name: 'Bob',
+        user: { id: 1 },
+        eventId: 5,
+      })
       const res = createMockRes()
 
       await personHandler(req, res)
