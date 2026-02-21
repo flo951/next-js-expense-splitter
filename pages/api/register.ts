@@ -81,10 +81,7 @@ export default async function registerHandler(
     )
 
     // status code 201 means something was created
-    response
-      .status(201)
-      .setHeader('Set-Cookie', serializedCookie)
-      .json({})
+    response.status(201).setHeader('Set-Cookie', serializedCookie).json({})
     return
   }
   response.status(405).json({ errors: [{ message: 'Method not supported' }] })

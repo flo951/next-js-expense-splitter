@@ -89,7 +89,10 @@ export default async function createEventHandler(
       return // Important, prevents error for multiple requests
     }
 
-    const deletedExpense = await deleteExpenseById(request.body.expenseId, user.id)
+    const deletedExpense = await deleteExpenseById(
+      request.body.expenseId,
+      user.id,
+    )
 
     if (!deletedExpense) {
       response.status(404).json({ errors: [{ message: 'Name not provided' }] })

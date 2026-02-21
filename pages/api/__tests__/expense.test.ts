@@ -143,13 +143,7 @@ describe('/api/expense', () => {
 
       await expenseHandler(req, res)
 
-      expect(createExpense).toHaveBeenCalledWith(
-        'Dinner',
-        9000,
-        5,
-        2,
-        [2, 3],
-      )
+      expect(createExpense).toHaveBeenCalledWith('Dinner', 9000, 5, 2, [2, 3])
       expect(res.status).toHaveBeenCalledWith(201)
       expect(res.json).toHaveBeenCalledWith({ expense: mockExpense })
     })

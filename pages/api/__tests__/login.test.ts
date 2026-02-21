@@ -58,13 +58,17 @@ describe('POST /api/login', () => {
       user_id: 1,
       expiry_timestamp: new Date(),
     })
-    jest.mocked(createSerializedRegisterSessionTokenCookie).mockResolvedValue(
-      'sessionToken=abc; HttpOnly',
-    )
+    jest
+      .mocked(createSerializedRegisterSessionTokenCookie)
+      .mockResolvedValue('sessionToken=abc; HttpOnly')
   })
 
   it('returns 400 when username is empty', async () => {
-    const req = createPostReq({ username: '', password: 'pass', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: '',
+      password: 'pass',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await loginHandler(req, res)
@@ -76,7 +80,11 @@ describe('POST /api/login', () => {
   })
 
   it('returns 400 when password is empty', async () => {
-    const req = createPostReq({ username: 'alice', password: '', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: '',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await loginHandler(req, res)
@@ -95,7 +103,11 @@ describe('POST /api/login', () => {
 
   it('returns 403 when CSRF token is invalid', async () => {
     jest.mocked(verifyCsrfToken).mockReturnValue(false)
-    const req = createPostReq({ username: 'alice', password: 'pass', csrfToken: 'bad' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'pass',
+      csrfToken: 'bad',
+    })
     const res = createMockRes()
 
     await loginHandler(req, res)
@@ -108,7 +120,11 @@ describe('POST /api/login', () => {
 
   it('returns 401 when username does not exist', async () => {
     jest.mocked(getUserWithPasswordHashByUsername).mockResolvedValue(null)
-    const req = createPostReq({ username: 'nobody', password: 'pass', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'nobody',
+      password: 'pass',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await loginHandler(req, res)
@@ -121,7 +137,11 @@ describe('POST /api/login', () => {
 
   it('returns 401 when password is wrong', async () => {
     jest.mocked(bcrypt.compare).mockResolvedValue(false as never)
-    const req = createPostReq({ username: 'alice', password: 'wrong', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'wrong',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await loginHandler(req, res)
@@ -133,18 +153,29 @@ describe('POST /api/login', () => {
   })
 
   it('returns 201 and sets session cookie on successful login', async () => {
-    const req = createPostReq({ username: 'alice', password: 'pass', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'pass',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await loginHandler(req, res)
 
     expect(res.status).toHaveBeenCalledWith(201)
-    expect(res.setHeader).toHaveBeenCalledWith('Set-Cookie', 'sessionToken=abc; HttpOnly')
+    expect(res.setHeader).toHaveBeenCalledWith(
+      'Set-Cookie',
+      'sessionToken=abc; HttpOnly',
+    )
     expect(res.json).toHaveBeenCalledWith({ user: { id: 1 } })
   })
 
   it('compares submitted password against stored hash', async () => {
-    const req = createPostReq({ username: 'alice', password: 'mypassword', csrfToken: 'tok' })
+    const req = createPostReq({
+      username: 'alice',
+      password: 'mypassword',
+      csrfToken: 'tok',
+    })
     const res = createMockRes()
 
     await loginHandler(req, res)
@@ -153,7 +184,11 @@ describe('POST /api/login', () => {
   })
 
   it('returns 405 for GET requests', async () => {
-    const req = { method: 'GET', body: {}, cookies: {} } as unknown as NextApiRequest
+    const req = {
+      method: 'GET',
+      body: {},
+      cookies: {},
+    } as unknown as NextApiRequest
     const res = createMockRes()
 
     await loginHandler(req, res)

@@ -23,10 +23,19 @@ const mockPeople = [
 ]
 
 const mockExpenses = [
-  { id: 100, expensename: 'Dinner', cost: 9000, event_id: 5, paymaster: 10, participantIds: [10, 11] },
+  {
+    id: 100,
+    expensename: 'Dinner',
+    cost: 9000,
+    event_id: 5,
+    paymaster: 10,
+    participantIds: [10, 11],
+  },
 ]
 
-function renderPeopleList(overrides: Partial<React.ComponentProps<typeof PeopleList>> = {}) {
+function renderPeopleList(
+  overrides: Partial<React.ComponentProps<typeof PeopleList>> = {},
+) {
   const defaults = {
     user: mockUser,
     setErrors: jest.fn(),
@@ -63,8 +72,12 @@ describe('PeopleList component', () => {
     it('renders a delete button for each person', () => {
       renderPeopleList()
 
-      expect(screen.getByLabelText('Delete Button for Person: Bob')).toBeInTheDocument()
-      expect(screen.getByLabelText('Delete Button for Person: Charlie')).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Delete Button for Person: Bob'),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Delete Button for Person: Charlie'),
+      ).toBeInTheDocument()
     })
 
     it('renders no people when the list is empty', () => {
@@ -112,7 +125,9 @@ describe('PeopleList component', () => {
       fireEvent.click(screen.getByDisplayValue('Add Person'))
 
       await waitFor(() => {
-        expect(setErrors).toHaveBeenCalledWith([{ message: 'Name not provided' }])
+        expect(setErrors).toHaveBeenCalledWith([
+          { message: 'Name not provided' },
+        ])
       })
     })
   })
@@ -152,7 +167,9 @@ describe('PeopleList component', () => {
       const setExpenseList = jest.fn()
       renderPeopleList({ setExpenseList })
 
-      fireEvent.click(screen.getByLabelText('Delete Button for Person: Charlie'))
+      fireEvent.click(
+        screen.getByLabelText('Delete Button for Person: Charlie'),
+      )
 
       await waitFor(() => {
         expect(setExpenseList).toHaveBeenCalledWith([
