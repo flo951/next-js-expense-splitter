@@ -6,13 +6,13 @@ Analysis of the current codebase and suggestions for new features, organized by 
 
 ## Current Features (Baseline)
 
-| Area | What exists |
-|------|-------------|
-| Auth | Register, login, cookie sessions, CSRF |
-| Events | Create, delete, image upload (Cloudinary) |
-| Participants | Add/remove people |
-| Expenses | Log expense, assign paymaster + participants |
-| Settlement | Minimum-transaction algorithm, bar chart |
+| Area         | What exists                                  |
+| ------------ | -------------------------------------------- |
+| Auth         | Register, login, cookie sessions, CSRF       |
+| Events       | Create, delete, image upload (Cloudinary)    |
+| Participants | Add/remove people                            |
+| Expenses     | Log expense, assign paymaster + participants |
+| Settlement   | Minimum-transaction algorithm, bar chart     |
 
 ---
 
@@ -21,6 +21,7 @@ Analysis of the current codebase and suggestions for new features, organized by 
 ### High Impact — Core UX Gaps
 
 #### 1. Expense Categories & Tags
+
 Expenses have a name and cost, nothing else. Adding categories (food, transport, accommodation, entertainment, etc.) would let users filter expenses and see a per-category breakdown chart.
 
 - **Schema change:** Add `category` field to `expenses` table
@@ -30,6 +31,7 @@ Expenses have a name and cost, nothing else. Adding categories (food, transport,
 ---
 
 #### 2. Unequal Splits
+
 The app tracks who participated but treats all shares as equal. Many real-world scenarios need splits by exact amount, percentage, or custom weight.
 
 - **Schema change:** Add `share_amount` (Int, cents) column on `expense_participants`
@@ -39,6 +41,7 @@ The app tracks who participated but treats all shares as equal. Many real-world 
 ---
 
 #### 3. Expense Editing
+
 There is no edit flow — users can only delete and re-add. A PATCH endpoint and edit form would cover a very common action.
 
 - **API change:** Add PATCH handler to `api/expense.ts`
@@ -48,6 +51,7 @@ There is no edit flow — users can only delete and re-add. A PATCH endpoint and
 ---
 
 #### 4. Event Sharing / Inviting Others
+
 Events are private to their creator (`user_id` ownership). There is no way to let other registered users co-manage an event.
 
 - **Schema change:** Add `event_members` join table (`event_id`, `user_id`, `role`)
@@ -59,6 +63,7 @@ Events are private to their creator (`user_id` ownership). There is no way to le
 ### Medium Impact — Usability Improvements
 
 #### 5. Currency Selection Per Event
+
 Costs are stored in cents but always displayed as euros. A `currency` field on `events` and `Intl.NumberFormat` for display would make the app internationally useful with minimal schema work.
 
 - **Schema change:** Add `currency` (String, e.g. `"EUR"`) to `events`
@@ -67,6 +72,7 @@ Costs are stored in cents but always displayed as euros. A `currency` field on `
 ---
 
 #### 6. Settlement History / Mark Payments as Done
+
 The settlement screen shows who owes whom, but there is no way to record that a debt was actually repaid.
 
 - **Schema change:** Add `settlements` table (`id`, `event_id`, `from_person_id`, `to_person_id`, `amount`, `settled_at`)
@@ -76,6 +82,7 @@ The settlement screen shows who owes whom, but there is no way to record that a 
 ---
 
 #### 7. Recurring Expenses
+
 For long-running events (shared housing, ongoing trips), users often have repeating costs.
 
 - **Quick version:** "Duplicate expense" button — copies name, cost, paymaster, and participants
@@ -84,6 +91,7 @@ For long-running events (shared housing, ongoing trips), users often have repeat
 ---
 
 #### 8. Export to PDF / CSV
+
 Let users download a full summary of event expenses and the settlement plan.
 
 - **API change:** GET `/api/export?eventId=X&format=csv|pdf` endpoint
@@ -95,6 +103,7 @@ Let users download a full summary of event expenses and the settlement plan.
 ### Lower Effort — Quick Wins
 
 #### 9. Event Archiving
+
 Replace hard-delete with soft-delete so historical events are preserved.
 
 - **Schema change:** Add `archived_at` (DateTime, nullable) to `events`
@@ -103,6 +112,7 @@ Replace hard-delete with soft-delete so historical events are preserved.
 ---
 
 #### 10. Expense Search & Date Tracking
+
 Add timestamps to expenses and a search/filter input on the event page.
 
 - **Schema change:** Add `created_at DateTime @default(now())` to `expenses`
@@ -111,6 +121,7 @@ Add timestamps to expenses and a search/filter input on the event page.
 ---
 
 #### 11. Participant Avatars / Colors
+
 Assign a consistent color per person across the bar chart and lists for easier visual scanning.
 
 - **Schema change:** Add `color` (String, hex) to `people`, generated on creation
@@ -119,6 +130,7 @@ Assign a consistent color per person across the bar chart and lists for easier v
 ---
 
 #### 12. Summary Email on Event Close
+
 When a user closes an event, send an email with the final settlement summary.
 
 - **Schema change:** Add `email` field to `users`; add `closed_at` to `events`
@@ -131,8 +143,8 @@ When a user closes an event, send an email with the final settlement summary.
 
 If prioritizing by effort-to-value ratio:
 
-| Priority | Feature | Why |
-|----------|---------|-----|
-| 1 | Expense editing (#3) | Lowest effort, high daily-use value |
-| 2 | Currency selection (#5) | Trivial schema change, immediately useful |
-| 3 | Settlement marking (#6) | Closes the loop on the app's core purpose |
+| Priority | Feature                 | Why                                       |
+| -------- | ----------------------- | ----------------------------------------- |
+| 1        | Expense editing (#3)    | Lowest effort, high daily-use value       |
+| 2        | Currency selection (#5) | Trivial schema change, immediately useful |
+| 3        | Settlement marking (#6) | Closes the loop on the app's core purpose |
