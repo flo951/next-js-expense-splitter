@@ -14,24 +14,23 @@ Instructions for Claude Code when working in this repository. Follow every rule 
 
 ```bash
 # Development
-yarn dev               # Start dev server at http://localhost:3000
+npm run dev            # Start dev server at http://localhost:3000
 
 # Build & Production
-yarn build             # Generate Prisma client then build
-yarn start             # Start production server
+npm run build          # Generate Prisma client then build
+npm start              # Start production server
 
 # Linting & Formatting
-yarn lint              # Run ESLint (must pass before committing)
-yarn format            # Format all files with Prettier
-yarn format:check      # Check formatting without writing
+npm run lint           # Run ESLint (must pass before committing)
+npm run format         # Format all files with Prettier
+npm run format:check   # Check formatting without writing
 
 # Database
-yarn migrate           # Create and apply a new migration (dev only)
-                       # Alias for: prisma migrate dev
+npm run migrate        # Create and apply a new migration (prisma migrate dev)
 
 # Testing
-yarn jest              # Run all unit tests
-yarn jest --watch      # Watch mode
+npm test               # Run all unit tests
+npm test -- --watch    # Watch mode
 ```
 
-**Pre-commit checklist:** `yarn lint && yarn format:check && yarn jest`
+**Pre-commit checklist:** `npm run lint && npm run format:check && npm test`
